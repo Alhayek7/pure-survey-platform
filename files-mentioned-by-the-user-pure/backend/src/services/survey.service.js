@@ -1,0 +1,4 @@
+﻿const { Survey, Question, QuestionOption } = require('../models');
+async function includeSurvey(id) { return Survey.findByPk(id, { include: [{ model: Question, as: 'questions', include: [{ model: QuestionOption, as: 'options' }] }] }); }
+async function replaceQuestions(surveyId, questions = []) { await Question.destroy({ where: { survey_id: surveyId } }); for (const q of questions) { const question = await Question.create({ survey_id: surveyId, question_text: q.question_text, question_type: q.question_type, is_required: !!q.is_required, order_number: q.order_number, validation_rules: q.validation_rules || null }); for (const [idx, opt] of (q.options || []).entries()) await QuestionOption.create({ question_id: question.id, option_text: opt.option_text || String(opt), option_value: opt.option_value || String(opt), order_number: opt.order_number || idx + 1 }); } }
+module.exports = { includeSurvey, replaceQuestions };

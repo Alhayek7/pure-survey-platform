@@ -1,0 +1,12 @@
+﻿require('dotenv').config();
+const express = require('express'); const cors = require('cors'); const helmet = require('helmet'); const path = require('path'); const swaggerUi = require('swagger-ui-express'); const swaggerJsdoc = require('swagger-jsdoc');
+const routes = require('./routes'); const { sequelize, Log } = require('./models'); const { generalLimiter } = require('./middleware/rateLimiter.middleware'); const { logger } = require('./utils/helpers');
+const app = express();
+app.use(helmet()); app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',') || '*', credentials: true })); app.use(generalLimiter); app.use(express.json({ limit: '1mb' })); app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use((req, _res, next) => { logger.info(req.method + ' ' + req.originalUrl); next(); });
+const swaggerSpec = swaggerJsdoc({ definition: { openapi: '3.0.0', info: { title: 'PURE Survey Platform API', version: '1.0.0' }, servers: [{ url: 'http://localhost:3000' }], paths: { '/api/v1/auth/login': { post: { summary: 'Login' } }, '/api/v1/auth/register': { post: { summary: 'Register' } }, '/api/v1/surveys': { post: { summary: 'Create survey' }, get: { summary: 'Admin: list all surveys' } }, '/api/v1/surveys/public': { get: { summary: 'List public published surveys' } }, '/api/v1/responses': { post: { summary: 'Submit survey response' } }, '/api/v1/export/survey/{id}': { get: { summary: 'Export survey responses to Excel' } }, '/api/v1/users': { get: { summary: 'Admin: list users' } } } }, apis: [] });
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/health', (_req, res) => res.json({ status: 'ok', name: 'PURE Survey Platform' })); app.use('/api', routes); app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
+app.use(async (err, req, res, _next) => { logger.error(err.message, { stack: err.stack }); try { await Log.create({ level: 'error', message: err.message, user_id: req.user?.id || null, ip_address: req.ip, user_agent: req.get('user-agent') }); } catch (_) {} res.status(err.status || 500).json({ message: err.message || 'Internal server error' }); });
+if (require.main === module) { const port = Number(process.env.PORT || 3000); sequelize.authenticate().then(() => app.listen(port, () => console.log('PURE Survey API running on http://localhost:' + port))).catch(err => { console.error('Database connection failed:', err.message); process.exit(1); }); }
+module.exports = app;
