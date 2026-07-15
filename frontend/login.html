@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, viewport-fit=cover">
+    <title>PURE Survey | تسجيل الدخول</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6Lei3R4tAAAAAMcJ9OMpyoXpoPDpLWRRQ3tgU2YB"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        html, body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: fixed;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #2C5EAD 0%, #1591DC 50%, #4BB8FA 100%);
+            position: relative;
+        }
+        
+        /* Animated background circles */
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(196, 226, 245, 0.12);
+            pointer-events: none;
+            animation: floatBg 25s infinite;
+            backdrop-filter: blur(3px);
+        }
+        
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(40px, -40px) scale(1.15); opacity: 0.5; }
+            50% { transform: translate(-30px, 30px) scale(0.85); opacity: 0.4; }
+            75% { transform: translate(30px, 40px) scale(1.05); opacity: 0.45; }
+        }
+        
+        /* Glass morphism card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Modern input fields */
+        .input-field {
+            transition: all 0.3s ease;
+            border: 2px solid #E2E8F0;
+            background: white;
+            font-size: 0.9rem;
+        }
+        
+        .input-field:focus {
+            border-color: #4BB8FA;
+            box-shadow: 0 0 0 4px rgba(75, 184, 250, 0.15);
+            outline: none;
+            transform: scale(1.01);
+        }
+        
+        /* Gradient buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(44, 94, 173, 0.5);
+        }
+        
+        /* Demo buttons */
+        .btn-admin {
+            background: linear-gradient(135deg, #DC2626, #B91C1C);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4);
+        }
+        
+        .btn-researcher {
+            background: linear-gradient(135deg, #059669, #047857);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-researcher:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.4);
+        }
+        
+        .btn-user {
+            background: linear-gradient(135deg, #7C3AED, #6D28D9);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-user:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+        
+        /* Spinner */
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 2px solid white;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.6s linear infinite;
+            display: inline-block;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Password toggle */
+        .password-toggle {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .password-toggle:hover {
+            color: #1591DC;
+            transform: scale(1.1);
+        }
+        
+        /* Demo cards */
+        .demo-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 15px 30px -12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* 2FA Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            max-width: 450px;
+            width: 90%;
+            animation: modalSlide 0.3s ease-out;
+        }
+        
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .year-badge {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 20;
+        }
+        
+        /* reCAPTCHA badge adjustment */
+        .grecaptcha-badge {
+            bottom: 70px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background circles -->
+    <div id="bgCircles"></div>
+    
+    <!-- Year badge -->
+    <div class="year-badge">
+        <i class="fas fa-chart-line ml-1"></i> PURE Survey Platform 2026
+    </div>
+    
+    <div class="relative z-10 h-screen w-screen flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-5xl p-8">
+            <!-- Logo Section -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 shadow-lg" style="background: linear-gradient(135deg, #2C5EAD, #1591DC);">
+                    <i class="fas fa-chart-line text-white text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold tracking-tight" style="color: #2C5EAD;">PURE Survey</h1>
+                <p class="text-sm mt-2" style="color: #1591DC;">منصة الاستبيانات الذكية - الإصدار 3.0</p>
+            </div>
+            
+            <!-- Message Container -->
+            <div id="messageContainer" class="mb-4 min-h-[60px]"></div>
+            
+            <!-- Two Column Layout -->
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Left Side: Login Form -->
+                <div>
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">مرحباً بعودتك</h3>
+                        <p class="text-sm text-gray-500">سجل دخولك للوصول إلى لوحة التحكم</p>
+                    </div>
+                    
+                    <form id="loginForm" class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2" style="color: #2C5EAD;">
+                                <i class="fas fa-envelope ml-1" style="color: #4BB8FA;"></i>
+                                البريد الإلكتروني
+                            </label>
+                            <div class="relative group">
+                                <i class="fas fa-envelope absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                                <input type="email" id="email" name="email" class="input-field w-full pr-10 pl-4 py-3 rounded-xl" placeholder="admin@example.com" autocomplete="email" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold mb-2" style="color: #2C5EAD;">
+                                <i class="fas fa-lock ml-1" style="color: #4BB8FA;"></i>
+                                كلمة المرور
+                            </label>
+                            <div class="relative group">
+                                <i class="fas fa-key absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                                <input type="password" id="password" name="password" class="input-field w-full pr-10 pl-10 py-3 rounded-xl" placeholder="••••••••" autocomplete="current-password" required>
+                                <i class="fas fa-eye password-toggle absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" onclick="togglePassword()"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="checkbox" id="rememberMe" class="w-4 h-4 rounded transition-all" style="accent-color: #1591DC;">
+                                <span class="mr-2 text-sm text-gray-600 group-hover:text-[#1591DC] transition">تذكرني</span>
+                            </label>
+                            <a href="forgot-password.html" class="text-sm text-[#1591DC] hover:text-[#2C5EAD] transition">نسيت كلمة المرور؟</a>
+                        </div>
+                        
+                        <!-- reCAPTCHA container -->
+                        <input type="hidden" id="recaptchaToken" name="recaptcha_token">
+                        
+                        <button type="submit" id="loginBtn" class="btn-primary w-full text-white py-3 rounded-xl font-semibold transition-all">
+                            <span class="flex items-center justify-center gap-2">
+                                <i class="fas fa-sign-in-alt text-sm"></i>
+                                تسجيل الدخول
+                            </span>
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-6">
+                        <p class="text-sm text-gray-500">
+                            ليس لديك حساب؟
+                            <a href="register.html" class="font-semibold text-[#1591DC] hover:text-[#2C5EAD] transition">إنشاء حساب جديد</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Right Side: Demo Accounts -->
+                <div>
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">تسجيل دخول تجريبي</h3>
+                        <p class="text-sm text-gray-500">اختر حساباً لتجربة المنصة مباشرة</p>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <!-- Admin Demo Card -->
+                        <div class="demo-card bg-gradient-to-r from-red-50 to-white rounded-xl p-3 border-2 border-red-200 transition-all cursor-pointer" onclick="demoLogin('admin@example.com', 'admin123', 'admin')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-md">
+                                    <i class="fas fa-crown text-white text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-gray-800">مدير النظام</span>
+                                        <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-semibold">Super Admin</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-0.5">admin@example.com</p>
+                                </div>
+                                <button class="btn-admin text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all">دخول ←</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Researcher Demo Card -->
+                        <div class="demo-card bg-gradient-to-r from-green-50 to-white rounded-xl p-3 border-2 border-green-200 transition-all cursor-pointer" onclick="demoLogin('researcher@example.com', 'admin123', 'researcher')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-md">
+                                    <i class="fas fa-microscope text-white text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-gray-800">باحث</span>
+                                        <span class="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded-full font-semibold">Researcher</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-0.5">researcher@example.com</p>
+                                </div>
+                                <button class="btn-researcher text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all">دخول ←</button>
+                            </div>
+                        </div>
+                        
+                        <!-- User Demo Card -->
+                        <div class="demo-card bg-gradient-to-r from-purple-50 to-white rounded-xl p-3 border-2 border-purple-200 transition-all cursor-pointer" onclick="demoLogin('user@example.com', 'admin123', 'user')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-md">
+                                    <i class="fas fa-user text-white text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-gray-800">مستخدم عادي</span>
+                                        <span class="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full font-semibold">Standard User</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-0.5">user@example.com</p>
+                                </div>
+                                <button class="btn-user text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all">دخول ←</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Info Box -->
+                    <div class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-indigo-100">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-shield-alt text-indigo-500 text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800 mb-2">🔒 أمان متقدم</p>
+                                <div class="space-y-1 text-xs text-gray-600">
+                                    <p class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500 text-xs"></i> تشفير كلمة المرور (bcrypt)</p>
+                                    <p class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500 text-xs"></i> المصادقة الثنائية (2FA)</p>
+                                    <p class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500 text-xs"></i> حماية من البوتات (reCAPTCHA)</p>
+                                    <p class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500 text-xs"></i> حماية من هجمات القوة الغاشمة</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div class="mt-6 flex justify-center gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-bold text-[#2C5EAD]">+10K</div>
+                            <div class="text-xs text-gray-500">استبيان</div>
+                        </div>
+                        <div class="w-px bg-gray-200"></div>
+                        <div>
+                            <div class="text-2xl font-bold text-[#1591DC]">+50K</div>
+                            <div class="text-xs text-gray-500">مستخدم</div>
+                        </div>
+                        <div class="w-px bg-gray-200"></div>
+                        <div>
+                            <div class="text-2xl font-bold text-[#4BB8FA]">+100K</div>
+                            <div class="text-xs text-gray-500">رد</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 2FA Modal -->
+    <div id="twoFactorModal" class="modal">
+        <div class="modal-content">
+            <div class="p-6">
+                <div class="text-center mb-4">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-mobile-alt text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">المصادقة الثنائية</h3>
+                    <p class="text-sm text-gray-500 mt-1">أدخل رمز التحقق المرسل إلى بريدك الإلكتروني</p>
+                </div>
+                
+                <div id="twoFactorError" class="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm text-center" style="display: none;"></div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">رمز التحقق</label>
+                    <input type="text" id="twoFactorCode" class="input-field w-full px-4 py-3 rounded-xl text-center text-2xl tracking-widest" placeholder="000000" maxlength="6" autocomplete="off">
+                    <p class="text-xs text-gray-500 mt-2 text-center">تم الإرسال إلى: <span id="twoFactorEmail" class="font-semibold"></span></p>
+                </div>
+                
+                <input type="hidden" id="twoFactorSessionId">
+                
+                <button onclick="verifyTwoFactor()" class="btn-primary w-full text-white py-3 rounded-xl font-semibold mb-3">
+                    تحقق
+                </button>
+                
+                <div class="flex justify-between text-sm">
+                    <button onclick="resendTwoFactorCode()" id="resend2faBtn" class="text-[#1591DC] hover:text-[#2C5EAD]">إعادة إرسال الرمز</button>
+                    <button onclick="useBackupCode()" class="text-[#1591DC] hover:text-[#2C5EAD]">استخدام رمز احتياطي</button>
+                </div>
+                
+                <div class="mt-4 pt-3 border-t text-center">
+                    <button onclick="closeTwoFactorModal()" class="text-gray-500 hover:text-gray-700 text-sm">إلغاء</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script src="js/2fa.js"></script>
+    
+    <script>
+        // Create background circles
+        function createBackgroundCircles() {
+            const container = document.getElementById('bgCircles');
+            for (let i = 0; i < 20; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('bg-circle');
+                const size = Math.random() * 250 + 80;
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.left = Math.random() * 100 + '%';
+                circle.style.top = Math.random() * 100 + '%';
+                circle.style.animationDelay = Math.random() * 25 + 's';
+                circle.style.animationDuration = Math.random() * 20 + 15 + 's';
+                container.appendChild(circle);
+            }
+        }
+        createBackgroundCircles();
+        
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('.password-toggle');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        // Show toast message
+        function showMessage(text, isSuccess) {
+            const container = document.getElementById('messageContainer');
+            if (!container) return;
+            const bgColor = isSuccess ? '#F0FDF4' : '#FEF2F2';
+            const textColor = isSuccess ? '#166534' : '#991B1B';
+            const icon = isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle';
+            const borderColor = isSuccess ? '#BBF7D0' : '#FECACA';
+            container.innerHTML = `
+                <div class="p-3 rounded-xl shadow-sm" style="background-color: ${bgColor}; color: ${textColor}; border: 1px solid ${borderColor};">
+                    <div class="flex items-center gap-2 text-sm">
+                        <i class="fas ${icon}"></i>
+                        <span>${text}</span>
+                    </div>
+                </div>
+            `;
+            setTimeout(() => {
+                if (container.firstChild) container.innerHTML = '';
+            }, 4000);
+        }
+        
+        // Get reCAPTCHA token
+        async function getRecaptchaToken() {
+            if (typeof grecaptcha !== 'undefined') {
+                try {
+                    const token = await grecaptcha.execute('6Lei3R4tAAAAAMcJ9OMpyoXpoPDpLWRRQ3tgU2YB', { action: 'login' });
+                    document.getElementById('recaptchaToken').value = token;
+                    return token;
+                } catch (error) {
+                    console.warn('reCAPTCHA failed:', error);
+                    return null;
+                }
+            }
+            return null;
+        }
+        
+        // Demo login
+        async function demoLogin(email, password, role) {
+            const card = event.currentTarget;
+            const btn = card.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<div class="spinner mx-auto"></div>';
+            btn.disabled = true;
+            
+            try {
+                const response = await api('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (response.requiresTwoFactor) {
+                    sessionStorage.setItem('pending2FASession', JSON.stringify({
+                        sessionId: response.sessionId,
+                        email: response.email || email,
+                        expiresIn: response.expiresIn
+                    }));
+                    showTwoFactorModal(response.sessionId, response.email || email, response.expiresIn);
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    return;
+                }
+                
+                setSession(response);
+                showMessage('✓ تم تسجيل الدخول بنجاح!', true);
+                
+                setTimeout(() => {
+                    if (role === 'admin') window.location.href = 'admin.html';
+                    else if (role === 'researcher') window.location.href = 'researcher.html';
+                    else window.location.href = 'dashboard.html';
+                }, 800);
+            } catch (error) {
+                let errorMsg = error.message;
+                if (errorMsg.includes('Invalid credentials')) {
+                    errorMsg = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+                } else if (errorMsg.includes('Too many')) {
+                    errorMsg = 'تم تجاوز عدد المحاولات. يرجى المحاولة لاحقاً.';
+                }
+                showMessage('✗ ' + errorMsg, false);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const loginBtn = document.getElementById('loginBtn');
+            const originalHtml = loginBtn.innerHTML;
+            
+            if (!email || !password) {
+                showMessage('الرجاء إدخال البريد الإلكتروني وكلمة المرور', false);
+                return;
+            }
+            
+            loginBtn.innerHTML = '<span class="flex items-center justify-center gap-2"><div class="spinner"></div> جاري الدخول...</span>';
+            loginBtn.disabled = true;
+            
+            // Get reCAPTCHA token
+            const recaptchaToken = await getRecaptchaToken();
+            const payload = { email, password };
+            if (recaptchaToken) {
+                payload['g-recaptcha-response'] = recaptchaToken;
+            }
+            
+            try {
+                const response = await api('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.requiresTwoFactor) {
+                    showTwoFactorModal(response.sessionId, response.email || email, response.expiresIn);
+                    loginBtn.innerHTML = originalHtml;
+                    loginBtn.disabled = false;
+                    return;
+                }
+                
+                setSession(response);
+                
+                if (rememberMe) {
+                    localStorage.setItem('rememberMe', 'true');
+                }
+                
+                showMessage('✓ تم تسجيل الدخول بنجاح! جاري التحويل...', true);
+                
+                const role = response.user.role;
+                let redirectUrl = 'dashboard.html';
+                if (role === 'admin') redirectUrl = 'admin.html';
+                else if (role === 'researcher') redirectUrl = 'researcher.html';
+                
+                setTimeout(() => {
+                    window.location.href = redirectUrl;
+                }, 800);
+                
+            } catch (error) {
+                let errorMessage = error.message;
+                if (errorMessage.includes('Invalid credentials')) {
+                    errorMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+                } else if (errorMessage.includes('Too many')) {
+                    errorMessage = 'تم تجاوز عدد المحاولات. يرجى المحاولة بعد 15 دقيقة.';
+                }
+                showMessage('✗ ' + errorMessage, false);
+                loginBtn.innerHTML = originalHtml;
+                loginBtn.disabled = false;
+            }
+        });
+        
+        // Check if user is already logged in
+        if (typeof token === 'function' && token() && typeof user === 'function' && user()) {
+            const currentUser = user();
+            const role = currentUser.role;
+            if (role === 'admin') window.location.href = 'admin.html';
+            else if (role === 'researcher') window.location.href = 'researcher.html';
+            else if (role === 'user') window.location.href = 'dashboard.html';
+        }
+        
+        // Check for pending 2FA session (after page refresh)
+        const pendingSession = sessionStorage.getItem('pending2FASession');
+        if (pendingSession) {
+            try {
+                const { sessionId, email, expiresIn } = JSON.parse(pendingSession);
+                sessionStorage.removeItem('pending2FASession');
+                showTwoFactorModal(sessionId, email, expiresIn);
+            } catch (e) {}
+        }
+    </script>
+</body>
+</html>

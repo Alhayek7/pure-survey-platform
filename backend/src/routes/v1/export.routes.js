@@ -1,0 +1,2 @@
+﻿const router = require('express').Router(); const c = require('../../controllers/export.controller'); const { authenticate } = require('../../middleware/auth.middleware'); const { adminOnly } = require('../../middleware/role.middleware'); const { asyncHandler: ah } = require('../../utils/helpers');
+router.get('/survey/:id', authenticate, ah(c.survey)); router.get('/all', authenticate, adminOnly, ah(c.all)); module.exports = router;

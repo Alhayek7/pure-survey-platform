@@ -1,0 +1,1316 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, viewport-fit=cover">
+    <title>PURE Survey | لوحة التحكم - مدير</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        html, body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: fixed;
+        }
+        
+        /* Animated background */
+        body {
+            background: linear-gradient(135deg, #C4E2F5 0%, #E8F4FD 100%);
+            position: relative;
+        }
+        
+        /* Animated circles background */
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(75, 184, 250, 0.08);
+            pointer-events: none;
+            animation: floatBg 25s infinite;
+        }
+        
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(40px, -40px) scale(1.1); }
+            50% { transform: translate(-30px, 30px) scale(0.9); }
+            75% { transform: translate(30px, 40px) scale(1.05); }
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(180deg, #2C5EAD 0%, #1591DC 100%);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Sidebar links */
+        .sidebar-link {
+            transition: all 0.3s ease;
+            border-radius: 0.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: width 0.3s ease;
+        }
+        
+        .sidebar-link:hover::before {
+            width: 100%;
+        }
+        
+        .sidebar-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Main content */
+        .main-content {
+            overflow-y: auto;
+            scrollbar-width: thin;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .main-content::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .main-content::-webkit-scrollbar-track {
+            background: #C4E2F5;
+            border-radius: 10px;
+        }
+        
+        .main-content::-webkit-scrollbar-thumb {
+            background: #1591DC;
+            border-radius: 10px;
+        }
+        
+        /* Stat cards */
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(196, 226, 245, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #2C5EAD, #4BB8FA);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px -15px rgba(44, 94, 173, 0.3);
+            border-color: #4BB8FA;
+        }
+        
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: linear-gradient(135deg, #C4E2F5, #E8F4FD);
+            color: #2C5EAD;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-align: right;
+        }
+        
+        .data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #E2E8F0;
+            font-size: 0.85rem;
+            color: #334155;
+        }
+        
+        .data-table tr:hover {
+            background: linear-gradient(90deg, #F8FAFE, #FFFFFF);
+        }
+        
+        /* Badges */
+        .badge-active {
+            background: linear-gradient(135deg, #C4E2F5, #E8F4FD);
+            color: #2C5EAD;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .badge-pending {
+            background: linear-gradient(135deg, #FEF3C7, #FFFBEB);
+            color: #D97706;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px -5px rgba(44, 94, 173, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #DC2626, #B91C1C);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px -5px rgba(220, 38, 38, 0.4);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            max-width: 450px;
+            width: 90%;
+            animation: modalSlide 0.3s ease-out;
+        }
+        
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Loading spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #C4E2F5;
+            border-top-color: #2C5EAD;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Role select */
+        .role-select {
+            background: #C4E2F5;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .role-select:hover {
+            background: #4BB8FA;
+            color: white;
+        }
+        
+        /* Avatar */
+        .avatar {
+            background: linear-gradient(135deg, #C4E2F5, #4BB8FA);
+        }
+
+        /* Chart Controls */
+.chart-container {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.chart-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: white;
+    padding: 20px;
+    margin: 0;
+    border-radius: 0;
+}
+
+.chart-controls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    display: flex;
+    gap: 8px;
+}
+
+.chart-control-btn {
+    background: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.chart-control-btn:hover {
+    background: #2C5EAD;
+    color: white;
+    border-color: #2C5EAD;
+}
+
+.chart-size-btn {
+    background: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+}
+
+.chart-size-btn:hover {
+    background: #1591DC;
+    color: white;
+}
+
+/* Zoom controls */
+.zoom-controls {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 10;
+    display: flex;
+    gap: 5px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 8px;
+    padding: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.zoom-btn {
+    background: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+}
+
+.zoom-btn:hover {
+    background: #2C5EAD;
+    color: white;
+}
+
+/* Sidebar Enhanced */
+.sidebar {
+    background: linear-gradient(180deg, #1a3d6d 0%, #0f5a8a 100%);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+}
+
+.sidebar-logo {
+    position: relative;
+}
+
+.sidebar-logo::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+}
+
+.sidebar-link {
+    transition: all 0.3s ease;
+    border-radius: 0.75rem;
+    position: relative;
+    overflow: hidden;
+    margin: 2px 0;
+}
+
+.sidebar-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transition: width 0.3s ease;
+}
+
+.sidebar-link:hover::before {
+    width: 100%;
+}
+
+.sidebar-link.active {
+    background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-right: 3px solid #4BB8FA;
+}
+
+.sidebar-link.active i {
+    color: #4BB8FA;
+}
+
+.sidebar-icon {
+    width: 24px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.sidebar-link:hover .sidebar-icon {
+    transform: scale(1.1);
+}
+
+.sidebar-badge {
+    background: #EF4444;
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 30px;
+    margin-right: auto;
+}
+
+/* User info card */
+.user-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    transition: all 0.3s;
+}
+
+.user-card:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+}
+
+.user-avatar {
+    background: linear-gradient(135deg, #4BB8FA, #1591DC);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Sidebar footer */
+.sidebar-footer {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: auto;
+}
+
+    </style>
+</head>
+<body>
+    <!-- Background circles -->
+    <div id="bgCircles"></div>
+    
+    <div class="flex h-screen w-screen relative z-10">
+<!-- Sidebar -->
+<aside class="sidebar w-80 flex-shrink-0 text-white shadow-2xl flex flex-col h-full">
+    <div class="p-6 flex flex-col h-full">
+        <!-- Logo -->
+        <div class="sidebar-logo flex items-center gap-3 mb-8 pb-4">
+            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm shadow-lg">
+                <i class="fas fa-chart-line text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">PURE Survey</h1>
+                <p class="text-xs text-white/70 mt-0.5">مدير النظام</p>
+            </div>
+        </div>
+        
+        <!-- User Info Card -->
+        <div class="user-card p-4 mb-8">
+            <div class="flex items-center gap-3">
+                <div class="user-avatar w-12 h-12 rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fas fa-user-shield text-white text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="font-bold text-sm" id="adminName">Admin</p>
+                    <p class="text-xs text-white/70">مدير النظام</p>
+                </div>
+                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-glow"></div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="flex-1 space-y-1.5">
+            <a href="#" onclick="showDashboard(); return false;" data-page="dashboard" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all">
+                <i class="fas fa-tachometer-alt w-5 text-lg sidebar-icon"></i>
+                <span class="flex-1">لوحة التحكم</span>
+            </a>
+            <a href="#" onclick="showSurveys(); return false;" data-page="surveys" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all">
+                <i class="fas fa-poll w-5 text-lg sidebar-icon"></i>
+                <span class="flex-1">الاستبيانات</span>
+            </a>
+            <a href="#" onclick="showUsers(); return false;" data-page="users" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all">
+                <i class="fas fa-users w-5 text-lg sidebar-icon"></i>
+                <span class="flex-1">المستخدمين</span>
+            </a>
+            <a href="#" onclick="showResponses(); return false;" data-page="responses" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all">
+                <i class="fas fa-chart-bar w-5 text-lg sidebar-icon"></i>
+                <span class="flex-1">الردود</span>
+            </a>
+            <a href="role-dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all">
+                <i class="fas fa-chart-pie w-5 text-lg sidebar-icon"></i>
+                <span class="flex-1">لوحة الأدوار</span>
+            </a>
+            <a href="#" onclick="location.href='notifications.html'" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all">
+                <i class="fas fa-bell w-5 text-lg sidebar-icon"></i>
+                <span class="flex-1">الإشعارات</span>
+                <span id="sidebarNotificationBadge" class="sidebar-badge hidden">0</span>
+            </a>
+            <a href="#" onclick="showExport(); return false;" data-page="export" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all">
+                <i class="fas fa-file-export w-5 text-lg sidebar-icon"></i>
+                <span class="flex-1">تصدير البيانات</span>
+            </a>
+        </nav>
+        
+        <!-- Logout -->
+        <div class="sidebar-footer pt-4 mt-4">
+            <a href="#" onclick="logout()" class="sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-white/80 hover:text-white transition-all">
+                <i class="fas fa-sign-out-alt w-5 text-lg sidebar-icon"></i>
+                <span class="flex-1">تسجيل الخروج</span>
+                <i class="fas fa-arrow-left text-xs opacity-50"></i>
+            </a>
+        </div>
+    </div>
+</aside>
+        
+        <!-- Main Content -->
+        <main class="main-content flex-1 p-6 overflow-y-auto">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800" id="pageTitle">لوحة التحكم</h1>
+                    <p class="text-sm text-gray-500 mt-1" id="pageSubtitle">مرحباً بك في منصة PURE Survey</p>
+                </div>
+<div class="flex items-center gap-4">
+    <!-- Notification Bell with Counter -->
+    <div class="relative cursor-pointer group" onclick="location.href='notifications.html'">
+        <i class="fas fa-bell text-gray-400 text-xl group-hover:text-gray-600 transition"></i>
+        <span id="notificationBadge" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 hidden">0</span>
+    </div>
+    <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100">
+        <i class="fas fa-calendar-alt text-[#4BB8FA]"></i>
+        <span class="text-sm text-gray-600" id="currentDate"></span>
+    </div>
+    <button onclick="refreshDashboard()" class="bg-white px-3 py-2 rounded-xl shadow-sm border border-gray-100 hover:bg-gray-50 transition">
+        <i class="fas fa-sync-alt text-gray-500"></i>
+    </button>
+</div>
+            </div>
+            
+            <!-- Dynamic Content -->
+            <div id="dashboardContent">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+                    <div class="stat-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-poll text-[#2C5EAD] text-xl"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-gray-800" id="totalSurveys">0</span>
+                        </div>
+                        <h3 class="text-gray-600 text-sm">إجمالي الاستبيانات</h3>
+                        <div class="flex items-center gap-1 mt-2">
+                            <i class="fas fa-arrow-up text-green-500 text-xs"></i>
+                            <p class="text-green-600 text-xs">+12% هذا الشهر</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-users text-[#1591DC] text-xl"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-gray-800" id="totalUsers">0</span>
+                        </div>
+                        <h3 class="text-gray-600 text-sm">إجمالي المستخدمين</h3>
+                        <div class="flex items-center gap-1 mt-2">
+                            <i class="fas fa-arrow-up text-green-500 text-xs"></i>
+                            <p class="text-green-600 text-xs">+8% هذا الشهر</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-file-alt text-[#4BB8FA] text-xl"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-gray-800" id="totalResponses">0</span>
+                        </div>
+                        <h3 class="text-gray-600 text-sm">إجمالي الردود</h3>
+                        <div class="flex items-center gap-1 mt-2">
+                            <i class="fas fa-arrow-up text-green-500 text-xs"></i>
+                            <p class="text-green-600 text-xs">+25% هذا الشهر</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-chart-line text-[#2C5EAD] text-xl"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-gray-800" id="responseRate">0%</span>
+                        </div>
+                        <h3 class="text-gray-600 text-sm">نسبة الاستجابة</h3>
+                        <div class="flex items-center gap-1 mt-2">
+                            <i class="fas fa-arrow-up text-green-500 text-xs"></i>
+                            <p class="text-green-600 text-xs">+5% هذا الأسبوع</p>
+                        </div>
+                    </div>
+                </div>
+                
+<!-- Charts -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+    
+    <!-- Surveys Chart -->
+    <div id="surveysChartContainer" class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 chart-container">
+        <div class="chart-controls">
+            <button onclick="toggleFullscreen('surveysChart', 'surveysChartContainer')" class="chart-control-btn" title="شاشة كاملة">
+                <i class="fas fa-expand"></i>
+            </button>
+            <button onclick="resizeChart(surveysChart, 'small')" class="chart-size-btn" title="تصغير">🔍-</button>
+            <button onclick="resizeChart(surveysChart, 'medium')" class="chart-size-btn" title="وسط">🔍</button>
+            <button onclick="resizeChart(surveysChart, 'large')" class="chart-size-btn" title="تكبير">🔍+</button>
+        </div>
+        <div class="zoom-controls">
+            <button onclick="zoomOut('surveysChart')" class="zoom-btn" title="تصغير">-</button>
+            <button onclick="resetZoom('surveysChart')" class="zoom-btn" title="إعادة تعيين">↺</button>
+            <button onclick="zoomIn('surveysChart')" class="zoom-btn" title="تكبير">+</button>
+        </div>
+        <h3 class="font-semibold text-gray-800 mb-3">نشاط الاستبيانات</h3>
+        <div style="position: relative; overflow-x: auto;">
+            <canvas id="surveysChart" height="200" style="width: 100%; transition: transform 0.3s;"></canvas>
+        </div>
+    </div>
+    
+    <!-- Users Chart -->
+    <div id="usersChartContainer" class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 chart-container">
+        <div class="chart-controls">
+            <button onclick="toggleFullscreen('usersChart', 'usersChartContainer')" class="chart-control-btn" title="شاشة كاملة">
+                <i class="fas fa-expand"></i>
+            </button>
+            <button onclick="resizeChart(usersChart, 'small')" class="chart-size-btn" title="تصغير">🔍-</button>
+            <button onclick="resizeChart(usersChart, 'medium')" class="chart-size-btn" title="وسط">🔍</button>
+            <button onclick="resizeChart(usersChart, 'large')" class="chart-size-btn" title="تكبير">🔍+</button>
+        </div>
+        <div class="zoom-controls">
+            <button onclick="zoomOut('usersChart')" class="zoom-btn" title="تصغير">-</button>
+            <button onclick="resetZoom('usersChart')" class="zoom-btn" title="إعادة تعيين">↺</button>
+            <button onclick="zoomIn('usersChart')" class="zoom-btn" title="تكبير">+</button>
+        </div>
+        <h3 class="font-semibold text-gray-800 mb-3">توزيع المستخدمين</h3>
+        <div style="position: relative; overflow-x: auto;">
+            <canvas id="usersChart" height="200" style="width: 100%; transition: transform 0.3s;"></canvas>
+        </div>
+    </div>
+</div>
+                
+                <!-- Recent Surveys -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center p-5 border-b border-gray-100">
+                        <h3 class="font-semibold text-gray-800">أحدث الاستبيانات</h3>
+                        <button onclick="showSurveys()" class="text-sm text-[#1591DC] hover:text-[#2C5EAD] transition">عرض الكل ←</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>ID</th><th>العنوان</th><th>الحالة</th><th>عدد الردود</th><th>تاريخ الإنشاء</th>
+                            </thead>
+                            <tbody id="recentSurveys"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-trash-alt text-red-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">تأكيد الحذف</h3>
+                <p class="text-gray-600 mb-6">هل أنت متأكد من حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.</p>
+                <div class="flex gap-3 justify-center">
+                    <button onclick="closeModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">إلغاء</button>
+                    <button id="confirmDeleteBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">حذف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script>
+        let currentDeleteId = null;
+        let currentDeleteType = null;
+        let surveysChart, usersChart;
+        
+        // Create background circles
+        function createBackgroundCircles() {
+            const container = document.getElementById('bgCircles');
+            for (let i = 0; i < 15; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('bg-circle');
+                const size = Math.random() * 200 + 100;
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.left = Math.random() * 100 + '%';
+                circle.style.top = Math.random() * 100 + '%';
+                circle.style.animationDelay = Math.random() * 20 + 's';
+                circle.style.animationDuration = Math.random() * 20 + 15 + 's';
+                container.appendChild(circle);
+            }
+        }
+        createBackgroundCircles();
+        
+        // Set current date
+        const date = new Date();
+        document.getElementById('currentDate').textContent = date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+        
+        // Show notification
+        function showNotification(text, isSuccess) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            const bgColor = isSuccess ? '#10B981' : '#EF4444';
+            notification.innerHTML = `
+                <div class="flex items-center gap-3 bg-white rounded-xl shadow-lg p-4 border-r-4" style="border-right-color: ${bgColor}">
+                    <i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}" style="color: ${bgColor}"></i>
+                    <span class="text-gray-700 text-sm">${text}</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        function showSkeletonLoading() {
+    document.getElementById('dashboardContent').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
+            ${Array(4).fill(0).map(() => `<div class="stat-card p-5"><div class="loading mx-auto"></div></div>`).join('')}
+        </div>
+        <div class="bg-white rounded-xl p-5"><div class="loading mx-auto h-64"></div></div>
+    `;
+}
+
+function logout() {
+    if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+        localStorage.clear();
+        window.location.href = 'index.html';
+    }
+}
+async function loadDashboard() {
+    // عرض Skeleton Loading
+    showSkeletonLoading();
+    
+    try {
+        const [surveys, users] = await Promise.all([
+            api('/surveys'),
+            api('/users')
+        ]);
+        
+        // إعادة بناء المحتوى بعد تحميل البيانات
+        document.getElementById('dashboardContent').innerHTML = `
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+                <div class="stat-card p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-poll text-[#2C5EAD] text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-gray-800" id="totalSurveys">${surveys.length}</span>
+                    </div>
+                    <h3 class="text-gray-600 text-sm">إجمالي الاستبيانات</h3>
+                    <div class="flex items-center gap-1 mt-2">
+                        <i class="fas fa-arrow-up text-green-500 text-xs"></i>
+                        <p class="text-green-600 text-xs">+12% هذا الشهر</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-users text-[#1591DC] text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-gray-800" id="totalUsers">${users.length}</span>
+                    </div>
+                    <h3 class="text-gray-600 text-sm">إجمالي المستخدمين</h3>
+                    <div class="flex items-center gap-1 mt-2">
+                        <i class="fas fa-arrow-up text-green-500 text-xs"></i>
+                        <p class="text-green-600 text-xs">+8% هذا الشهر</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-file-alt text-[#4BB8FA] text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-gray-800" id="totalResponses">0</span>
+                    </div>
+                    <h3 class="text-gray-600 text-sm">إجمالي الردود</h3>
+                    <div class="flex items-center gap-1 mt-2">
+                        <i class="fas fa-arrow-up text-green-500 text-xs"></i>
+                        <p class="text-green-600 text-xs">+25% هذا الشهر</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-chart-line text-[#2C5EAD] text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold text-gray-800" id="responseRate">0%</span>
+                    </div>
+                    <h3 class="text-gray-600 text-sm">نسبة الاستجابة</h3>
+                    <div class="flex items-center gap-1 mt-2">
+                        <i class="fas fa-arrow-up text-green-500 text-xs"></i>
+                        <p class="text-green-600 text-xs">+5% هذا الأسبوع</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                    <h3 class="font-semibold text-gray-800 mb-3">نشاط الاستبيانات</h3>
+                    <canvas id="surveysChart" height="200"></canvas>
+                </div>
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                    <h3 class="font-semibold text-gray-800 mb-3">توزيع المستخدمين</h3>
+                    <canvas id="usersChart" height="200"></canvas>
+                </div>
+            </div>
+            
+            <!-- Recent Surveys -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center p-5 border-b border-gray-100">
+                    <h3 class="font-semibold text-gray-800">أحدث الاستبيانات</h3>
+                    <button onclick="showSurveys()" class="text-sm text-[#1591DC] hover:text-[#2C5EAD] transition">عرض الكل ←</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>ID</th><th>العنوان</th><th>الحالة</th><th>عدد الردود</th><th>تاريخ الإنشاء</th>
+                        </thead>
+                        <tbody id="recentSurveys"></tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        
+        // حساب الردود
+        let totalResponses = 0;
+        for (const survey of surveys) {
+            if (survey.responses) totalResponses += survey.responses.length;
+        }
+        document.getElementById('totalResponses').textContent = totalResponses;
+        
+        const rate = surveys.length > 0 ? Math.round((totalResponses / (surveys.length * 10)) * 100) : 0;
+        document.getElementById('responseRate').textContent = rate + '%';
+        
+        // تحديث الرسوم البيانية
+        updateCharts(surveys, users);
+        
+        // تحديث جدول أحدث الاستبيانات
+        const recentSurveys = surveys.slice(-5).reverse();
+        document.getElementById('recentSurveys').innerHTML = recentSurveys.map(s => `
+            <tr>
+                <td>${s.id}</td>
+                <td>${s.title || 'بدون عنوان'}</td>
+                <td><span class="${s.status === 'published' ? 'badge-active' : 'badge-pending'}">${s.status === 'published' ? 'منشور' : 'مسودة'}</span></td>
+                <td>${s.responses?.length || 0}</td>
+                <td>${new Date(s.created_at).toLocaleDateString('ar-EG')}</td>
+            </tr>
+        `).join('');
+        
+        const currentUser = user();
+        if (currentUser) {
+            document.getElementById('adminName').textContent = currentUser.name || 'Admin';
+        }
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+        showNotification('فشل في تحميل البيانات: ' + error.message, false);
+    }
+}
+        
+// Load notification count
+// Load notification count from API
+async function loadNotificationCount() {
+    try {
+        // استدعاء API حقيقي لجلب عدد الإشعارات غير المقروءة
+        const response = await api('/notifications/unread/count');
+        const unreadCount = response.count || 0;
+        
+        // تحديث عداد الجرس في Header
+        const badge = document.getElementById('notificationBadge');
+        if (badge) {
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+        
+        // تحديث عداد القائمة الجانبية
+        const sidebarBadge = document.getElementById('sidebarNotificationBadge');
+        if (sidebarBadge) {
+            if (unreadCount > 0) {
+                sidebarBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                sidebarBadge.classList.remove('hidden');
+            } else {
+                sidebarBadge.classList.add('hidden');
+            }
+        }
+        
+        console.log(`📢 عدد الإشعارات غير المقروءة: ${unreadCount}`);
+    } catch (error) {
+        console.error('فشل في تحميل عدد الإشعارات:', error);
+        // في حالة الخطأ، نعرض 0 ولا نظهر العداد
+        const badge = document.getElementById('notificationBadge');
+        const sidebarBadge = document.getElementById('sidebarNotificationBadge');
+        if (badge) badge.classList.add('hidden');
+        if (sidebarBadge) sidebarBadge.classList.add('hidden');
+    }
+}
+
+// Refresh dashboard
+function refreshDashboard() {
+    showNotification('جاري تحديث البيانات...', true);
+    loadDashboard();
+    loadNotificationCount();
+}
+
+function updateCharts(surveys, users) {
+    const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'];
+    const surveyCounts = [5, 8, 12, 15, 18, 22];
+    
+    const ctx1 = document.getElementById('surveysChart')?.getContext('2d');
+    if (ctx1) {
+        if (surveysChart) surveysChart.destroy();
+        surveysChart = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'الاستبيانات',
+                    data: surveyCounts,
+                    borderColor: '#2C5EAD',
+                    backgroundColor: '#C4E2F5',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+    }
+    
+    const adminCount = users.filter(u => u.role === 'admin').length;
+    const researcherCount = users.filter(u => u.role === 'researcher').length;
+    const userCount = users.filter(u => u.role === 'user').length;
+    
+    const ctx2 = document.getElementById('usersChart')?.getContext('2d');
+    if (ctx2) {
+        if (usersChart) usersChart.destroy();
+        usersChart = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['مدير', 'باحث', 'مستخدم'],
+                datasets: [{
+                    data: [adminCount, researcherCount, userCount],
+                    backgroundColor: ['#2C5EAD', '#1591DC', '#4BB8FA'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    }
+}
+        
+        // Navigation functions
+        function setActiveLink(page) {
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+                if(link.getAttribute('data-page') === page) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        function showDashboard() {
+            setActiveLink('dashboard');
+            document.getElementById('pageTitle').textContent = 'لوحة التحكم';
+            document.getElementById('pageSubtitle').textContent = 'مرحباً بك في منصة PURE Survey';
+            loadDashboard();
+        }
+        
+        async function showSurveys() {
+            setActiveLink('surveys');
+            document.getElementById('pageTitle').textContent = 'الاستبيانات';
+            document.getElementById('pageSubtitle').textContent = 'إدارة جميع الاستبيانات';
+            document.getElementById('dashboardContent').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading"></div></div>';
+            
+            try {
+                const surveys = await api('/surveys');
+                document.getElementById('dashboardContent').innerHTML = `
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                        <div class="p-5 border-b border-gray-100 flex justify-between items-center">
+                            <h3 class="font-semibold text-gray-800">جميع الاستبيانات</h3>
+                            <button onclick="location.href='create-survey.html'" class="btn-primary text-white px-4 py-2 rounded-lg text-sm">+ استبيان جديد</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead><tr><th>ID</th><th>العنوان</th><th>الحالة</th><th>الردود</th><th>تاريخ الإنشاء</th><th>إجراءات</th></tr></thead>
+                                <tbody>${surveys.map(s => `
+                                    <tr>
+                                        <td>${s.id}</td>
+                                        <td>${s.title || 'بدون عنوان'}</td>
+                                        <td><span class="${s.status === 'published' ? 'badge-active' : 'badge-pending'}">${s.status === 'published' ? 'منشور' : 'مسودة'}</span></td>
+                                        <td>${s.responses?.length || 0}</td>
+                                        <td>${new Date(s.created_at).toLocaleDateString('ar-EG')}</td>
+                                        <td><button onclick="editSurvey(${s.id})" class="text-[#1591DC] ml-3 hover:text-[#2C5EAD]"><i class="fas fa-edit"></i></button><button onclick="deleteSurvey(${s.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></td>
+                                    </tr>
+                                `).join('')}</tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('dashboardContent').innerHTML = '<div class="text-center text-red-600">خطأ في تحميل البيانات</div>';
+            }
+        }
+        
+        async function showUsers() {
+            setActiveLink('users');
+            document.getElementById('pageTitle').textContent = 'المستخدمين';
+            document.getElementById('pageSubtitle').textContent = 'إدارة حسابات المستخدمين';
+            document.getElementById('dashboardContent').innerHTML = '<div class="flex justify-center items-center h-64"><div class="loading"></div></div>';
+            
+            try {
+                const users = await api('/users');
+                document.getElementById('dashboardContent').innerHTML = `
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                        <div class="p-5 border-b border-gray-100">
+                            <h3 class="font-semibold text-gray-800">جميع المستخدمين</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead><tr><th>ID</th><th>الاسم</th><th>البريد الإلكتروني</th><th>الدور</th><th>تاريخ التسجيل</th><th>إجراءات</th></tr></thead>
+                                <tbody>${users.map(u => `
+                                    <tr>
+                                        <td>${u.id}</td>
+                                        <td>${u.name}</td>
+                                        <td>${u.email}</td>
+                                        <td><select onchange="changeRole(${u.id}, this.value)" class="role-select"><option ${u.role === 'admin' ? 'selected' : ''}>admin</option><option ${u.role === 'researcher' ? 'selected' : ''}>researcher</option><option ${u.role === 'user' ? 'selected' : ''}>user</option></select></td>
+                                        <td>${new Date(u.created_at).toLocaleDateString('ar-EG')}</td>
+                                        <td><button onclick="deleteUser(${u.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></td>
+                                    </tr>
+                                `).join('')}</tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('dashboardContent').innerHTML = '<div class="text-center text-red-600">خطأ في تحميل البيانات</div>';
+            }
+        }
+        
+        function showResponses() {
+            setActiveLink('responses');
+            document.getElementById('pageTitle').textContent = 'الردود';
+            document.getElementById('pageSubtitle').textContent = 'عرض جميع ردود الاستبيانات';
+            document.getElementById('dashboardContent').innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-gradient-to-br from-[#C4E2F5] to-[#E8F4FD] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-chart-bar text-[#2C5EAD] text-3xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">عرض الردود</h3>
+                        <p class="text-gray-500 mb-4">اختر استبياناً من قائمة الاستبيانات لعرض الردود</p>
+                        <button onclick="showSurveys()" class="btn-primary text-white px-6 py-2 rounded-lg">عرض الاستبيانات</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+function showExport() {
+    setActiveLink('export');
+    document.getElementById('pageTitle').textContent = 'تصدير البيانات';
+    document.getElementById('pageSubtitle').textContent = 'تصدير الردود إلى Excel';
+    document.getElementById('dashboardContent').innerHTML = `
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-gradient-to-br from-green-50 to-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-file-excel text-green-600 text-3xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">تصدير جميع الردود</h3>
+                <p class="text-gray-500 mb-4">تصدير جميع ردود الاستبيانات إلى ملف Excel</p>
+                <button onclick="exportAllData()" class="btn-primary text-white px-6 py-3 rounded-lg"><i class="fas fa-download ml-2"></i> تصدير إلى Excel</button>
+            </div>
+        </div>
+    `;
+}
+        
+        async function exportAllData() {
+            try {
+                showNotification('جاري تصدير البيانات...', true);
+                const response = await fetch(API_BASE + '/export/all', {
+                    headers: { 'Authorization': 'Bearer ' + token() }
+                });
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'all-responses-' + new Date().toISOString().slice(0,19) + '.xlsx';
+                a.click();
+                URL.revokeObjectURL(url);
+                showNotification('تم تصدير البيانات بنجاح', true);
+            } catch (error) {
+                showNotification('فشل التصدير: ' + error.message, false);
+            }
+        }
+        
+        function editSurvey(id) {
+            location.href = 'edit-survey.html?id=' + id;
+        }
+        
+        function deleteSurvey(id) {
+            currentDeleteId = id;
+            currentDeleteType = 'survey';
+            document.getElementById('deleteModal').classList.add('active');
+            document.getElementById('confirmDeleteBtn').onclick = async () => {
+                try {
+                    await api('/surveys/' + id, { method: 'DELETE' });
+                    showNotification('تم حذف الاستبيان بنجاح', true);
+                    closeModal();
+                    showSurveys();
+                } catch (error) {
+                    showNotification('فشل الحذف: ' + error.message, false);
+                }
+            };
+        }
+        
+        function deleteUser(id) {
+            if(id === 1) {
+                showNotification('لا يمكن حذف المدير الرئيسي', false);
+                return;
+            }
+            currentDeleteId = id;
+            currentDeleteType = 'user';
+            document.getElementById('deleteModal').classList.add('active');
+            document.getElementById('confirmDeleteBtn').onclick = async () => {
+                try {
+                    await api('/users/' + id, { method: 'DELETE' });
+                    showNotification('تم حذف المستخدم بنجاح', true);
+                    closeModal();
+                    showUsers();
+                } catch (error) {
+                    showNotification('فشل الحذف: ' + error.message, false);
+                }
+            };
+        }
+        
+        async function changeRole(id, role) {
+            try {
+                await api('/users/' + id + '/role', {
+                    method: 'PUT',
+                    body: JSON.stringify({ role: role })
+                });
+                showNotification('تم تحديث الدور بنجاح', true);
+            } catch (error) {
+                showNotification('فشل التحديث: ' + error.message, false);
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            currentDeleteId = null;
+            currentDeleteType = null;
+        }
+        
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+        
+        // Initial load
+requireRole('admin');
+loadDashboard();
+loadNotificationCount();
+
+// Refresh notification count every 30 seconds
+setInterval(loadNotificationCount, 30000);
+
+// Chart zoom and fullscreen functions
+let currentZoom = 1;
+let fullscreenChart = null;
+
+function zoomIn(chartId) {
+    const canvas = document.getElementById(chartId);
+    if (!canvas) return;
+    currentZoom = Math.min(currentZoom + 0.1, 2);
+    canvas.style.transform = `scale(${currentZoom})`;
+    canvas.style.transition = 'transform 0.3s ease';
+}
+
+function zoomOut(chartId) {
+    const canvas = document.getElementById(chartId);
+    if (!canvas) return;
+    currentZoom = Math.max(currentZoom - 0.1, 0.5);
+    canvas.style.transform = `scale(${currentZoom})`;
+    canvas.style.transition = 'transform 0.3s ease';
+}
+
+function resetZoom(chartId) {
+    const canvas = document.getElementById(chartId);
+    if (!canvas) return;
+    currentZoom = 1;
+    canvas.style.transform = 'scale(1)';
+}
+
+function toggleFullscreen(chartId, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    }
+    
+    if (fullscreenChart === containerId) {
+        container.classList.remove('fullscreen');
+        fullscreenChart = null;
+    } else {
+        if (fullscreenChart) {
+            document.getElementById(fullscreenChart).classList.remove('fullscreen');
+        }
+        container.classList.add('fullscreen');
+        fullscreenChart = containerId;
+        
+        // طلب وضع الشاشة الكاملة
+        if (container.requestFullscreen) {
+            container.requestFullscreen();
+        }
+    }
+    
+    setTimeout(() => {
+        if (surveysChart) surveysChart.resize();
+        if (usersChart) usersChart.resize();
+    }, 100);
+}
+
+function resizeChart(chart, size) {
+    if (!chart || !chart.canvas) return;
+    const sizes = { small: 150, medium: 200, large: 250 };
+    const height = sizes[size] || 200;
+    const canvasContainer = chart.canvas.parentElement;
+    if (canvasContainer) {
+        canvasContainer.style.height = height + 'px';
+    }
+    chart.resize();
+}
+
+    </script>
+</body>
+</html>

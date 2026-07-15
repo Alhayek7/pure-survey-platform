@@ -1,0 +1,499 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, viewport-fit=cover">
+    <title>لوحة المستخدم | PURE Survey 2026</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #C4E2F5 0%, #E8F4FD 100%);
+            min-height: 100vh;
+        }
+        
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(75, 184, 250, 0.06);
+            animation: floatBg 25s infinite;
+        }
+        
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(50px, -50px) scale(1.2); opacity: 0.5; }
+            50% { transform: translate(-40px, 40px) scale(0.85); opacity: 0.4; }
+            75% { transform: translate(40px, 50px) scale(1.1); opacity: 0.45; }
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(44, 94, 173, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(180deg, #2C5EAD 0%, #1591DC 100%);
+            transition: all 0.3s;
+        }
+        
+        .sidebar-link {
+            transition: all 0.3s;
+            border-radius: 0.75rem;
+        }
+        
+        .sidebar-link:hover, .sidebar-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(-5px);
+        }
+        
+        /* Main Content */
+        .main-content {
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+        
+        .main-content::-webkit-scrollbar { width: 5px; }
+        .main-content::-webkit-scrollbar-track { background: #C4E2F5; border-radius: 10px; }
+        .main-content::-webkit-scrollbar-thumb { background: #1591DC; border-radius: 10px; }
+        
+        /* Survey Cards */
+        .survey-card {
+            background: white;
+            border-radius: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #E2E8F0;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .survey-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 35px -12px rgba(44, 94, 173, 0.2);
+            border-color: #C4E2F5;
+        }
+        
+        /* Stats Card */
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1.25rem;
+            border: 1px solid rgba(196, 226, 245, 0.5);
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -12px rgba(44, 94, 173, 0.2);
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(44, 94, 173, 0.5);
+        }
+        
+        .btn-outline {
+            border: 1.5px solid #1591DC;
+            color: #1591DC;
+            background: white;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            color: white;
+        }
+        
+        /* Avatar */
+        .avatar {
+            background: linear-gradient(135deg, #C4E2F5, #4BB8FA);
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 90px;
+            left: 20px;
+            z-index: 1100;
+            animation: slideRight 0.3s ease-out;
+        }
+        
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+        
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 12px;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-card {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+        }
+        
+        .skeleton-title { height: 24px; width: 60%; margin-bottom: 12px; }
+        .skeleton-text { height: 16px; margin: 8px 0; }
+        .skeleton-button { height: 40px; width: 100px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation" id="bgAnimation"></div>
+    
+    <!-- Header -->
+    <header class="header text-white">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight">PURE Survey</h1>
+                        <p class="text-xs text-white/70">لوحة المستخدم</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                        <i class="fas fa-user text-sm"></i>
+                        <span class="text-sm" id="userName">Loading...</span>
+                    </div>
+                    <button onclick="logout()" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg text-sm transition">
+                        <i class="fas fa-sign-out-alt ml-1"></i> خروج
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="relative z-10 container mx-auto px-6 py-8">
+        <div class="flex gap-6">
+            <!-- Sidebar -->
+            <aside class="sidebar w-64 flex-shrink-0 text-white rounded-2xl shadow-xl h-fit">
+                <div class="p-5">
+                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/20">
+                        <div class="avatar w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-bold text-sm" id="sidebarUserName">User</p>
+                            <p class="text-xs text-white/70">مستخدم عادي</p>
+                        </div>
+                    </div>
+                    <nav class="space-y-2">
+                        <a href="#" onclick="showPublishedSurveys(); return false;" data-page="surveys" class="sidebar-link flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl bg-white/20">
+                            <i class="fas fa-poll w-4"></i>
+                            <span>الاستبيانات المتاحة</span>
+                        </a>
+                        <a href="#" onclick="showMyResponses(); return false;" data-page="responses" class="sidebar-link flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl">
+                            <i class="fas fa-list w-4"></i>
+                            <span>ردودي السابقة</span>
+                        </a>
+                        <a href="#" onclick="location.href='settings.html'" class="sidebar-link flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl">
+                            <i class="fas fa-cog w-4"></i>
+                            <span>الإعدادات</span>
+                        </a>
+                    </nav>
+                </div>
+            </aside>
+            
+            <!-- Content -->
+            <div class="flex-1">
+                <!-- Welcome Section -->
+                <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-6 mb-6 fade-in-up">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-800" id="welcomeTitle">مرحباً بك</h1>
+                            <p class="text-gray-500 text-sm mt-1" id="welcomeSubtitle">استكشف الاستبيانات المتاحة وشارك برأيك</p>
+                        </div>
+                        <div class="w-12 h-12 bg-gradient-to-br from-[#C4E2F5] to-[#E8F4FD] rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-smile-wink text-[#2C5EAD] text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6" id="statsContainer"></div>
+                
+                <!-- Content Container -->
+                <div id="dynamicContent"></div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="js/api.js"></script>
+    <script>
+        let currentUser = null;
+        let allSurveys = [];
+        
+        // Background animation
+        function createBackgroundCircles() {
+            const container = document.getElementById('bgAnimation');
+            for (let i = 0; i < 20; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('bg-circle');
+                const size = Math.random() * 200 + 80;
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.left = Math.random() * 100 + '%';
+                circle.style.top = Math.random() * 100 + '%';
+                circle.style.animationDelay = Math.random() * 25 + 's';
+                circle.style.animationDuration = Math.random() * 20 + 15 + 's';
+                container.appendChild(circle);
+            }
+        }
+        createBackgroundCircles();
+        
+        function showToast(text, isSuccess) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            const bgColor = isSuccess ? '#10B981' : '#EF4444';
+            toast.innerHTML = `<div class="flex items-center gap-3 bg-white rounded-xl shadow-lg p-3 border-r-4" style="border-right-color: ${bgColor}"><i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span class="text-gray-700 text-sm">${text}</span></div>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function setActiveLink(page) {
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('bg-white/20');
+                if (link.getAttribute('data-page') === page) {
+                    link.classList.add('bg-white/20');
+                }
+            });
+        }
+        
+        // Load user data
+        async function loadUserData() {
+            try {
+                const response = await api('/auth/me');
+                if (response.success) {
+                    currentUser = response.user;
+                    document.getElementById('userName').textContent = currentUser.name || 'User';
+                    document.getElementById('sidebarUserName').textContent = currentUser.name || 'User';
+                    document.getElementById('welcomeTitle').textContent = `مرحباً، ${currentUser.name || 'مستخدم'}`;
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+        
+        // Show published surveys
+        async function showPublishedSurveys() {
+            setActiveLink('surveys');
+            document.getElementById('welcomeSubtitle').textContent = 'اختر استبياناً للإجابة عليه';
+            
+            // Show skeleton loading
+            document.getElementById('dynamicContent').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    ${Array(4).fill(0).map(() => `
+                        <div class="skeleton-card">
+                            <div class="skeleton skeleton-title"></div>
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text w-2/3"></div>
+                            <div class="flex gap-2 mt-4">
+                                <div class="skeleton skeleton-button flex-1"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            try {
+                const surveys = await api('/surveys/public');
+                allSurveys = surveys;
+                
+                // Update stats
+                document.getElementById('statsContainer').innerHTML = `
+                    <div class="stat-card p-4 text-center"><div class="text-2xl font-bold text-[#2C5EAD]">${surveys.length}</div><div class="text-sm text-gray-500">استبيانات متاحة</div></div>
+                    <div class="stat-card p-4 text-center"><div class="text-2xl font-bold text-[#1591DC]" id="participatedCount">0</div><div class="text-sm text-gray-500">استبيانات شاركت بها</div></div>
+                    <div class="stat-card p-4 text-center"><div class="text-2xl font-bold text-[#4BB8FA]" id="completionRate">0%</div><div class="text-sm text-gray-500">نسبة الإكمال</div></div>
+                `;
+                
+                // Load participated count
+                try {
+                    const myResponses = await api('/responses/my');
+                    const participatedCount = myResponses.length;
+                    document.getElementById('participatedCount').textContent = participatedCount;
+                    const completionRate = surveys.length > 0 ? Math.round((participatedCount / surveys.length) * 100) : 0;
+                    document.getElementById('completionRate').textContent = completionRate + '%';
+                } catch(e) {}
+                
+                if (surveys.length === 0) {
+                    document.getElementById('dynamicContent').innerHTML = `
+                        <div class="bg-white rounded-2xl p-8 text-center">
+                            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-inbox text-gray-400 text-3xl"></i>
+                            </div>
+                            <p class="text-gray-500">لا توجد استبيانات متاحة حالياً</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                document.getElementById('dynamicContent').innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        ${surveys.map(survey => `
+                            <div class="survey-card p-5 fade-in-up" onclick="answerSurvey(${survey.id})">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-[#C4E2F5] to-[#E8F4FD] rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-poll text-[#2C5EAD] text-lg"></i>
+                                        </div>
+                                        <h3 class="font-bold text-gray-800">${escapeHtml(survey.title || 'بدون عنوان')}</h3>
+                                    </div>
+                                    <span class="badge-success text-xs px-2 py-1 rounded-full">منشور</span>
+                                </div>
+                                <p class="text-gray-500 text-sm mb-3 line-clamp-2">${escapeHtml(survey.description || 'لا يوجد وصف')}</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1 text-xs text-gray-400">
+                                        <i class="far fa-calendar-alt"></i>
+                                        <span>${new Date(survey.created_at).toLocaleDateString('ar-EG')}</span>
+                                    </div>
+                                    <button class="btn-primary text-white px-4 py-1.5 rounded-lg text-sm">
+                                        <i class="fas fa-pen ml-1"></i> إجابة
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('dynamicContent').innerHTML = '<div class="bg-white rounded-2xl p-8 text-center text-red-500">فشل في تحميل الاستبيانات</div>';
+            }
+        }
+        
+        // Show my responses
+        async function showMyResponses() {
+            setActiveLink('responses');
+            document.getElementById('welcomeSubtitle').textContent = 'سجل إجاباتك على الاستبيانات';
+            
+            document.getElementById('statsContainer').innerHTML = `
+                <div class="stat-card p-4 text-center"><div class="text-2xl font-bold text-[#2C5EAD]" id="responseCount">0</div><div class="text-sm text-gray-500">إجمالي الردود</div></div>
+                <div class="stat-card p-4 text-center"><div class="text-2xl font-bold text-[#1591DC]" id="lastResponseDate">-</div><div class="text-sm text-gray-500">آخر رد</div></div>
+                <div class="stat-card p-4 text-center"><div class="text-2xl font-bold text-[#4BB8FA]" id="avgTime">-</div><div class="text-sm text-gray-500">متوسط وقت الإجابة</div></div>
+            `;
+            
+            document.getElementById('dynamicContent').innerHTML = '<div class="text-center py-12"><div class="spinner mx-auto"></div><p class="text-gray-500 mt-3">جاري تحميل ردودك...</p></div>';
+            
+            try {
+                const responses = await api('/responses/my');
+                
+                document.getElementById('responseCount').textContent = responses.length;
+                if (responses.length > 0) {
+                    const lastDate = new Date(responses[0].submitted_at).toLocaleDateString('ar-EG');
+                    document.getElementById('lastResponseDate').textContent = lastDate;
+                }
+                
+                if (responses.length === 0) {
+                    document.getElementById('dynamicContent').innerHTML = `
+                        <div class="bg-white rounded-2xl p-8 text-center">
+                            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-inbox text-gray-400 text-3xl"></i>
+                            </div>
+                            <p class="text-gray-500">لم تقم بالإجابة على أي استبيان بعد</p>
+                            <button onclick="showPublishedSurveys()" class="btn-primary text-white px-4 py-2 rounded-lg text-sm mt-3">عرض الاستبيانات المتاحة</button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                document.getElementById('dynamicContent').innerHTML = `
+                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gradient-to-r from-[#C4E2F5] to-[#E8F4FD]">
+                                    <tr><th class="p-3 text-right text-sm font-semibold text-[#2C5EAD]">الاستبيان</th><th class="p-3 text-right text-sm font-semibold text-[#2C5EAD]">تاريخ الإجابة</th><th class="p-3 text-right text-sm font-semibold text-[#2C5EAD]">عدد الإجابات</th><th class="p-3 text-right text-sm font-semibold text-[#2C5EAD]">الإجراء</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${responses.map(r => `
+                                        <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                            <td class="p-3 text-sm font-medium">${escapeHtml(r.survey?.title || 'استبيان')}</td>
+                                            <td class="p-3 text-sm text-gray-500">${new Date(r.submitted_at).toLocaleString('ar-EG')}</td>
+                                            <td class="p-3 text-sm">${r.answers?.length || 0}</td>
+                                            <td class="p-3"><button onclick="viewResponseDetail(${r.id})" class="text-[#1591DC] hover:text-[#2C5EAD] text-sm"><i class="fas fa-eye ml-1"></i> عرض</button></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('dynamicContent').innerHTML = '<div class="bg-white rounded-2xl p-8 text-center text-red-500">فشل في تحميل الردود</div>';
+            }
+        }
+        
+        function answerSurvey(id) {
+            window.location.href = `survey.html?id=${id}`;
+        }
+        
+        function viewResponseDetail(id) {
+            showToast('سيتم عرض تفاصيل الإجابة قريباً', true);
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+        }
+        
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+        
+        // Initial load
+        requireRole('user');
+        loadUserData();
+        showPublishedSurveys();
+    </script>
+</body>
+</html>

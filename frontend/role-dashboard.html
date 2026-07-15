@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الأدوار والبيانات | PURE Survey</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { font-family: 'Cairo', sans-serif; }
+        body { background: linear-gradient(135deg, #C4E2F5 0%, #E8F4FD 100%); min-height: 100vh; }
+        
+        .role-card {
+            background: white;
+            border-radius: 1.5rem;
+            transition: all 0.3s;
+            border: 1px solid rgba(196, 226, 245, 0.5);
+            overflow: hidden;
+        }
+        
+        .role-card:hover { transform: translateY(-5px); box-shadow: 0 20px 35px -15px rgba(44,94,173,0.2); }
+        
+        .role-header-admin { background: linear-gradient(135deg, #DC2626, #B91C1C); }
+        .role-header-researcher { background: linear-gradient(135deg, #059669, #047857); }
+        .role-header-user { background: linear-gradient(135deg, #7C3AED, #6D28D9); }
+        
+        .stat-number { font-size: 2rem; font-weight: bold; }
+        
+        .page-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: #F1F5F9;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        
+        .page-link:hover {
+            background: #2C5EAD;
+            color: white;
+        }
+        
+        .badge-role { padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; }
+        .badge-admin { background: #FEE2E2; color: #DC2626; }
+        .badge-researcher { background: #D1FAE5; color: #059669; }
+        .badge-user { background: #EDE9FE; color: #7C3AED; }
+        
+        .data-card {
+            background: #F8FAFE;
+            border-radius: 1rem;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">📊 لوحة الأدوار والبيانات</h1>
+            <p class="text-gray-500 mt-2">عرض تفصيلي للأدوار والصفحات والبيانات الخاصة بكل دور</p>
+        </div>
+        
+        <!-- Users Summary -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-users text-[#2C5EAD]"></i> المستخدمين في النظام
+            </h2>
+            <div id="usersSummary" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+        </div>
+        
+        <!-- Roles Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            
+            <!-- Admin Role Card -->
+            <div class="role-card">
+                <div class="role-header-admin text-white p-4">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-crown text-2xl"></i>
+                        <div>
+                            <h3 class="text-xl font-bold">مدير النظام</h3>
+                            <p class="text-sm opacity-90">Admin</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <div class="mb-4">
+                        <div class="text-sm text-gray-500 mb-2">📊 إحصائيات المدير</div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="data-card text-center">
+                                <div class="stat-number text-[#DC2626]" id="adminTotalUsers">0</div>
+                                <div class="text-xs text-gray-500">مستخدمين</div>
+                            </div>
+                            <div class="data-card text-center">
+                                <div class="stat-number text-[#DC2626]" id="adminTotalSurveys">0</div>
+                                <div class="text-xs text-gray-500">استبيانات</div>
+                            </div>
+                            <div class="data-card text-center">
+                                <div class="stat-number text-[#DC2626]" id="adminTotalResponses">0</div>
+                                <div class="text-xs text-gray-500">ردود</div>
+                            </div>
+                            <div class="data-card text-center">
+                                <div class="stat-number text-[#DC2626]" id="adminTotalNotifications">0</div>
+                                <div class="text-xs text-gray-500">إشعارات</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="text-sm text-gray-500 mb-2">📄 الصفحات المتاحة</div>
+                        <div class="flex flex-wrap gap-2">
+                            <a href="admin.html" class="page-link"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                            <a href="admin-surveys.html" class="page-link"><i class="fas fa-poll"></i> الاستبيانات</a>
+                            <a href="users.html" class="page-link"><i class="fas fa-users"></i> المستخدمين</a>
+                            <a href="responses.html" class="page-link"><i class="fas fa-chart-bar"></i> الردود</a>
+                            <a href="export.html" class="page-link"><i class="fas fa-file-export"></i> تصدير</a>
+                            <a href="notifications.html" class="page-link"><i class="fas fa-bell"></i> الإشعارات</a>
+                            <a href="settings.html" class="page-link"><i class="fas fa-cog"></i> الإعدادات</a>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t pt-3">
+                        <div class="text-sm text-gray-500 mb-2">👤 مستخدمين المثال</div>
+                        <div id="adminUsersList" class="space-y-1 text-sm"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Researcher Role Card -->
+            <div class="role-card">
+                <div class="role-header-researcher text-white p-4">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-microscope text-2xl"></i>
+                        <div>
+                            <h3 class="text-xl font-bold">باحث</h3>
+                            <p class="text-sm opacity-90">Researcher</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <div class="mb-4">
+                        <div class="text-sm text-gray-500 mb-2">📊 إحصائيات الباحث</div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="data-card text-center">
+                                <div class="stat-number text-[#059669]" id="researcherTotalSurveys">0</div>
+                                <div class="text-xs text-gray-500">استبياناتي</div>
+                            </div>
+                            <div class="data-card text-center">
+                                <div class="stat-number text-[#059669]" id="researcherTotalResponses">0</div>
+                                <div class="text-xs text-gray-500">ردود على استبياناتي</div>
+                            </div>
+                            <div class="data-card text-center">
+                                <div class="stat-number text-[#059669]" id="researcherPublished">0</div>
+                                <div class="text-xs text-gray-500">منشور</div>
+                            </div>
+                            <div class="data-card text-center">
+                                <div class="stat-number text-[#059669]" id="researcherDraft">0</div>
+                                <div class="text-xs text-gray-500">مسودة</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="text-sm text-gray-500 mb-2">📄 الصفحات المتاحة</div>
+                        <div class="flex flex-wrap gap-2">
+                            <a href="researcher.html" class="page-link"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                            <a href="researcher-surveys.html" class="page-link"><i class="fas fa-poll"></i> استبياناتي</a>
+                            <a href="researcher-create.html" class="page-link"><i class="fas fa-plus"></i> استبيان جديد</a>
+                            <a href="researcher-export.html" class="page-link"><i class="fas fa-file-export"></i> تصدير البيانات</a>
+                            <a href="settings.html" class="page-link"><i class="fas fa-cog"></i> الإعدادات</a>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t pt-3">
+                        <div class="text-sm text-gray-500 mb-2">👤 مستخدمين المثال</div>
+                        <div id="researcherUsersList" class="space-y-1 text-sm"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- User Role Card -->
+            <div class="role-card">
+                <div class="role-header-user text-white p-4">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-user text-2xl"></i>
+                        <div>
+                            <h3 class="text-xl font-bold">مستخدم عادي</h3>
+                            <p class="text-sm opacity-90">User</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <div class="mb-4">
+                        <div class="text-sm text-gray-500 mb-2">📊 إحصائيات المستخدم</div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="data-card text-center">
+                                <div class="stat-number text-[#7C3AED]" id="userAvailableSurveys">0</div>
+                                <div class="text-xs text-gray-500">استبيانات متاحة</div>
+                            </div>
+                            <div class="data-card text-center">
+                                <div class="stat-number text-[#7C3AED]" id="userMyResponses">0</div>
+                                <div class="text-xs text-gray-500">ردودي</div>
+                            </div>
+                            <div class="data-card text-center">
+                                <div class="stat-number text-[#7C3AED]" id="userCompleted">0</div>
+                                <div class="text-xs text-gray-500">تم الإجابة</div>
+                            </div>
+                            <div class="data-card text-center">
+                                <div class="stat-number text-[#7C3AED]" id="userPending">0</div>
+                                <div class="text-xs text-gray-500">لم يجب بعد</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="text-sm text-gray-500 mb-2">📄 الصفحات المتاحة</div>
+                        <div class="flex flex-wrap gap-2">
+                            <a href="dashboard.html" class="page-link"><i class="fas fa-tachometer-alt"></i> لوحة المستخدم</a>
+                            <a href="survey.html" class="page-link"><i class="fas fa-poll"></i> الاستبيانات</a>
+                            <a href="my-responses.html" class="page-link"><i class="fas fa-list"></i> ردودي السابقة</a>
+                            <a href="settings.html" class="page-link"><i class="fas fa-cog"></i> الإعدادات</a>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t pt-3">
+                        <div class="text-sm text-gray-500 mb-2">👤 مستخدمين المثال</div>
+                        <div id="userUsersList" class="space-y-1 text-sm"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Data Tables -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Admin Data -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm">
+                <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <i class="fas fa-database text-[#DC2626]"></i> بيانات المدير
+                </h3>
+                <div id="adminDataTable" class="space-y-2 text-sm"></div>
+            </div>
+            
+            <!-- Researcher Data -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm">
+                <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <i class="fas fa-database text-[#059669]"></i> بيانات الباحث
+                </h3>
+                <div id="researcherDataTable" class="space-y-2 text-sm"></div>
+            </div>
+            
+            <!-- User Data -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm">
+                <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <i class="fas fa-database text-[#7C3AED]"></i> بيانات المستخدم
+                </h3>
+                <div id="userDataTable" class="space-y-2 text-sm"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script>
+        async function loadAllData() {
+            try {
+                // Get all users
+                const users = await api('/users');
+                
+                // Get all surveys
+                const allSurveys = await api('/surveys');
+                
+                // Get responses
+                let allResponses = [];
+                try {
+                    allResponses = await api('/responses/my');
+                } catch(e) { console.log('No responses'); }
+                
+                // Get notifications (if available)
+                let notifications = [];
+                try {
+                    const notifRes = await api('/notifications');
+                    notifications = notifRes.data || [];
+                } catch(e) { console.log('No notifications'); }
+                
+                // Separate users by role
+                const adminUsers = users.filter(u => u.role === 'admin');
+                const researcherUsers = users.filter(u => u.role === 'researcher');
+                const normalUsers = users.filter(u => u.role === 'user');
+                
+                // Admin stats
+                document.getElementById('adminTotalUsers').textContent = adminUsers.length;
+                document.getElementById('adminTotalSurveys').textContent = allSurveys.length;
+                document.getElementById('adminTotalResponses').textContent = allResponses.length;
+                document.getElementById('adminTotalNotifications').textContent = notifications.length;
+                
+                // Admin users list
+                document.getElementById('adminUsersList').innerHTML = adminUsers.map(u => 
+                    `<div class="flex items-center gap-2"><span class="badge-role badge-admin">مدير</span> ${u.name} (${u.email})</div>`
+                ).join('');
+                
+                // Researcher stats
+                const researcherSurveys = allSurveys.filter(s => researcherUsers.some(u => u.id === s.user_id));
+                let researcherResponses = 0;
+                researcherSurveys.forEach(s => researcherResponses += s.responses?.length || 0);
+                const published = researcherSurveys.filter(s => s.status === 'published').length;
+                const drafts = researcherSurveys.filter(s => s.status === 'draft').length;
+                
+                document.getElementById('researcherTotalSurveys').textContent = researcherSurveys.length;
+                document.getElementById('researcherTotalResponses').textContent = researcherResponses;
+                document.getElementById('researcherPublished').textContent = published;
+                document.getElementById('researcherDraft').textContent = drafts;
+                
+                // Researcher users list
+                document.getElementById('researcherUsersList').innerHTML = researcherUsers.map(u => 
+                    `<div class="flex items-center gap-2"><span class="badge-role badge-researcher">باحث</span> ${u.name} (${u.email})</div>`
+                ).join('');
+                
+                // User stats
+                const publishedSurveys = allSurveys.filter(s => s.status === 'published');
+                const myResponses = allResponses.length;
+                const completed = myResponses;
+                const pending = publishedSurveys.length - myResponses;
+                
+                document.getElementById('userAvailableSurveys').textContent = publishedSurveys.length;
+                document.getElementById('userMyResponses').textContent = myResponses;
+                document.getElementById('userCompleted').textContent = completed;
+                document.getElementById('userPending').textContent = pending > 0 ? pending : 0;
+                
+                // User users list
+                document.getElementById('userUsersList').innerHTML = normalUsers.map(u => 
+                    `<div class="flex items-center gap-2"><span class="badge-role badge-user">مستخدم</span> ${u.name} (${u.email})</div>`
+                ).join('');
+                
+                // Admin data table
+                document.getElementById('adminDataTable').innerHTML = `
+                    <div class="data-card"><strong>إجمالي المستخدمين:</strong> ${users.length}</div>
+                    <div class="data-card"><strong>المستخدمين النشطين:</strong> ${users.filter(u => u.is_active !== false).length}</div>
+                    <div class="data-card"><strong>إجمالي الاستبيانات:</strong> ${allSurveys.length}</div>
+                    <div class="data-card"><strong>الاستبيانات المنشورة:</strong> ${allSurveys.filter(s => s.status === 'published').length}</div>
+                    <div class="data-card"><strong>إجمالي الردود:</strong> ${allResponses.length}</div>
+                    <div class="data-card"><strong>الإشعارات غير المقروءة:</strong> ${notifications.filter(n => !n.is_read).length}</div>
+                `;
+                
+                // Researcher data table
+                document.getElementById('researcherDataTable').innerHTML = `
+                    <div class="data-card"><strong>عدد الباحثين:</strong> ${researcherUsers.length}</div>
+                    <div class="data-card"><strong>استبياناتي:</strong> ${researcherSurveys.length}</div>
+                    <div class="data-card"><strong>منشور:</strong> ${published}</div>
+                    <div class="data-card"><strong>مسودة:</strong> ${drafts}</div>
+                    <div class="data-card"><strong>إجمالي الردود على استبياناتي:</strong> ${researcherResponses}</div>
+                    <div class="data-card"><strong>نسبة الاستجابة:</strong> ${researcherSurveys.length > 0 ? Math.round((researcherResponses / (researcherSurveys.length * 10)) * 100) : 0}%</div>
+                `;
+                
+                // User data table
+                document.getElementById('userDataTable').innerHTML = `
+                    <div class="data-card"><strong>عدد المستخدمين العاديين:</strong> ${normalUsers.length}</div>
+                    <div class="data-card"><strong>الاستبيانات المتاحة:</strong> ${publishedSurveys.length}</div>
+                    <div class="data-card"><strong>الاستبيانات التي أجبت عليها:</strong> ${myResponses}</div>
+                    <div class="data-card"><strong>الاستبيانات المتبقية:</strong> ${pending > 0 ? pending : 0}</div>
+                    <div class="data-card"><strong>نسبة الإكمال:</strong> ${publishedSurveys.length > 0 ? Math.round((myResponses / publishedSurveys.length) * 100) : 0}%</div>
+                    <div class="data-card"><strong>آخر رد:</strong> ${allResponses.length > 0 ? new Date(allResponses[0].submitted_at).toLocaleDateString('ar-EG') : 'لا يوجد'}</div>
+                `;
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+        
+        loadAllData();
+    </script>
+</body>
+</html>

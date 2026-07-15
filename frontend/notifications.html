@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, viewport-fit=cover">
+    <title>الإشعارات | PURE Survey 2026</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #C4E2F5 0%, #E8F4FD 100%);
+            min-height: 100vh;
+        }
+        
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(75, 184, 250, 0.06);
+            animation: floatBg 25s infinite;
+        }
+        
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(50px, -50px) scale(1.2); opacity: 0.5; }
+            50% { transform: translate(-40px, 40px) scale(0.85); opacity: 0.4; }
+            75% { transform: translate(40px, 50px) scale(1.1); opacity: 0.45; }
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(44, 94, 173, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        /* Stats Cards */
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1.25rem;
+            border: 1px solid rgba(196, 226, 245, 0.5);
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -12px rgba(44, 94, 173, 0.2);
+        }
+        
+        /* Notification Card */
+        .notification-card {
+            background: white;
+            border-radius: 1.25rem;
+            transition: all 0.3s;
+            border: 1px solid #E2E8F0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .notification-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            transition: all 0.3s;
+        }
+        
+        .notification-card.unread::before {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+        }
+        
+        .notification-card:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 10px 25px -10px rgba(44, 94, 173, 0.15);
+        }
+        
+        .notification-card.unread {
+            background: linear-gradient(135deg, #F8FAFE, #FFFFFF);
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(44, 94, 173, 0.5);
+        }
+        
+        .btn-outline {
+            border: 1.5px solid #1591DC;
+            color: #1591DC;
+            background: white;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            color: white;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 90px;
+            left: 20px;
+            z-index: 1100;
+            animation: slideRight 0.3s ease-out;
+        }
+        
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* Loading */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #C4E2F5;
+            border-top-color: #2C5EAD;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+        
+        /* Mark as read */
+        .mark-read {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mark-read:hover {
+            color: #2C5EAD;
+        }
+        
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 12px;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-title { height: 20px; width: 60%; margin-bottom: 8px; }
+        .skeleton-text { height: 14px; margin: 4px 0; }
+        .skeleton-icon { width: 40px; height: 40px; border-radius: 12px; }
+        .skeleton-button { height: 28px; width: 80px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation" id="bgAnimation"></div>
+    
+    <!-- Header -->
+    <header class="header text-white">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight">PURE Survey</h1>
+                        <p class="text-xs text-white/70">الإشعارات</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                        <i class="fas fa-user-shield text-sm"></i>
+                        <span class="text-sm" id="adminName">Admin</span>
+                    </div>
+                    <button onclick="location.href='admin.html'" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg text-sm transition">
+                        <i class="fas fa-arrow-right ml-1"></i> لوحة التحكم
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="relative z-10 container mx-auto px-6 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Title & Actions -->
+            <div class="flex justify-between items-center mb-6 fade-in-up">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fas fa-bell text-[#2C5EAD]"></i>
+                        الإشعارات
+                        <span id="unreadCount" class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">0</span>
+                    </h2>
+                    <p class="text-gray-500 text-sm mt-1">أحدث التنبيهات والتحديثات</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="markAllAsRead()" class="btn-outline px-3 py-1.5 rounded-lg text-sm">
+                        <i class="fas fa-check-double ml-1"></i> تحديد الكل كمقروء
+                    </button>
+                    <button onclick="refreshNotifications()" class="btn-outline px-3 py-1.5 rounded-lg text-sm">
+                        <i class="fas fa-sync-alt ml-1"></i> تحديث
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Summary -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6 fade-in-up" style="animation-delay: 0.05s">
+                <div class="stat-card p-3 text-center">
+                    <div class="flex items-center justify-center gap-2">
+                        <i class="fas fa-bell text-[#2C5EAD] text-lg"></i>
+                        <span class="text-xl font-bold text-gray-800" id="totalNotifications">0</span>
+                    </div>
+                    <p class="text-xs text-gray-500">إجمالي الإشعارات</p>
+                </div>
+                <div class="stat-card p-3 text-center">
+                    <div class="flex items-center justify-center gap-2">
+                        <i class="fas fa-envelope-open-text text-[#1591DC] text-lg"></i>
+                        <span class="text-xl font-bold text-gray-800" id="readCount">0</span>
+                    </div>
+                    <p class="text-xs text-gray-500">مقروءة</p>
+                </div>
+                <div class="stat-card p-3 text-center">
+                    <div class="flex items-center justify-center gap-2">
+                        <i class="fas fa-envelope text-[#4BB8FA] text-lg"></i>
+                        <span class="text-xl font-bold text-gray-800" id="unreadTotal">0</span>
+                    </div>
+                    <p class="text-xs text-gray-500">غير مقروءة</p>
+                </div>
+                <div class="stat-card p-3 text-center">
+                    <div class="flex items-center justify-center gap-2">
+                        <i class="fas fa-trash-alt text-gray-400 text-lg"></i>
+                        <span class="text-xl font-bold text-gray-800" id="deletedCount">0</span>
+                    </div>
+                    <p class="text-xs text-gray-500">محذوفة</p>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-3 mb-6 flex flex-wrap gap-2 fade-in-up shadow-sm" style="animation-delay: 0.1s">
+                <button onclick="filterNotifications('all')" id="filterAll" class="filter-btn px-4 py-1.5 rounded-lg text-sm transition bg-[#2C5EAD] text-white">
+                    <i class="fas fa-list ml-1"></i> الكل
+                </button>
+                <button onclick="filterNotifications('unread')" id="filterUnread" class="filter-btn px-4 py-1.5 rounded-lg text-sm transition bg-gray-200 text-gray-700">
+                    <i class="fas fa-envelope ml-1"></i> غير مقروءة
+                </button>
+                <button onclick="filterNotifications('read')" id="filterRead" class="filter-btn px-4 py-1.5 rounded-lg text-sm transition bg-gray-200 text-gray-700">
+                    <i class="fas fa-check-circle ml-1"></i> مقروءة
+                </button>
+                <button onclick="filterNotifications('survey')" id="filterSurvey" class="filter-btn px-4 py-1.5 rounded-lg text-sm transition bg-gray-200 text-gray-700">
+                    <i class="fas fa-poll ml-1"></i> استبيانات
+                </button>
+                <button onclick="filterNotifications('user')" id="filterUser" class="filter-btn px-4 py-1.5 rounded-lg text-sm transition bg-gray-200 text-gray-700">
+                    <i class="fas fa-user ml-1"></i> مستخدمين
+                </button>
+                <button onclick="filterNotifications('system')" id="filterSystem" class="filter-btn px-4 py-1.5 rounded-lg text-sm transition bg-gray-200 text-gray-700">
+                    <i class="fas fa-cog ml-1"></i> نظام
+                </button>
+            </div>
+            
+            <!-- Notifications Container -->
+            <div id="notificationsContainer" class="space-y-3 fade-in-up" style="animation-delay: 0.15s">
+                <div class="text-center py-12">
+                    <div class="spinner mx-auto"></div>
+                    <p class="text-gray-500 mt-3">جاري تحميل الإشعارات...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="js/api.js"></script>
+    <script>
+        let allNotifications = [];
+        let currentFilter = 'all';
+        
+        // Notification Types Icons
+        const typeIcons = {
+            survey: 'fa-poll',
+            response: 'fa-chart-bar',
+            user: 'fa-user-plus',
+            system: 'fa-cog',
+            warning: 'fa-exclamation-triangle',
+            success: 'fa-check-circle',
+            info: 'fa-info-circle'
+        };
+        
+        const typeColors = {
+            survey: 'text-[#2C5EAD]',
+            response: 'text-[#1591DC]',
+            user: 'text-[#4BB8FA]',
+            system: 'text-gray-500',
+            warning: 'text-yellow-500',
+            success: 'text-green-500',
+            info: 'text-blue-500'
+        };
+        
+        // ============================================
+        // Background Animation
+        // ============================================
+        function createBackgroundCircles() {
+            const container = document.getElementById('bgAnimation');
+            for (let i = 0; i < 25; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('bg-circle');
+                const size = Math.random() * 280 + 80;
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.left = Math.random() * 100 + '%';
+                circle.style.top = Math.random() * 100 + '%';
+                circle.style.animationDelay = Math.random() * 25 + 's';
+                circle.style.animationDuration = Math.random() * 22 + 12 + 's';
+                container.appendChild(circle);
+            }
+        }
+        createBackgroundCircles();
+        
+        // ============================================
+        // Toast Notification
+        // ============================================
+        function showToast(text, isSuccess) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            const bgColor = isSuccess ? '#10B981' : '#EF4444';
+            toast.innerHTML = `<div class="flex items-center gap-3 bg-white rounded-xl shadow-lg p-3 border-r-4" style="border-right-color: ${bgColor}"><i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span class="text-gray-700 text-sm">${text}</span></div>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        // ============================================
+        // Skeleton Loading
+        // ============================================
+        function showSkeletonLoading() {
+            document.getElementById('notificationsContainer').innerHTML = `
+                <div class="space-y-3">
+                    ${Array(5).fill(0).map(() => `
+                        <div class="bg-white rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <div class="skeleton skeleton-icon"></div>
+                                <div class="flex-1">
+                                    <div class="skeleton skeleton-title w-32 mb-2"></div>
+                                    <div class="skeleton skeleton-text w-full"></div>
+                                    <div class="skeleton skeleton-text w-2/3 mt-1"></div>
+                                    <div class="flex justify-between mt-3">
+                                        <div class="skeleton skeleton-button w-24"></div>
+                                        <div class="skeleton skeleton-button w-16"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        // ============================================
+        // Helper Functions
+        // ============================================
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+        }
+        
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            if (seconds < 60) return 'الآن';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes} دقيقة`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours} ساعة`;
+            const days = Math.floor(hours / 24);
+            if (days < 7) return `${days} يوم`;
+            return new Date(date).toLocaleDateString('ar-EG');
+        }
+        
+        function updateStats() {
+            const total = allNotifications.length;
+            const read = allNotifications.filter(n => n.read).length;
+            const unread = total - read;
+            document.getElementById('totalNotifications').textContent = total;
+            document.getElementById('readCount').textContent = read;
+            document.getElementById('unreadTotal').textContent = unread;
+            document.getElementById('unreadCount').textContent = unread;
+        }
+        
+        // ============================================
+        // API Functions
+        // ============================================
+        async function fetchNotifications(page = 1, limit = 50) {
+            try {
+                const response = await api(`/notifications?page=${page}&limit=${limit}`);
+                return response;
+            } catch (error) {
+                console.error('Fetch notifications error:', error);
+                return { data: [] };
+            }
+        }
+        
+        async function markNotificationRead(id) {
+            try {
+                await api(`/notifications/${id}/read`, { method: 'PUT' });
+                return true;
+            } catch (error) {
+                console.error('Mark notification read error:', error);
+                return false;
+            }
+        }
+        
+        async function markAllNotificationsRead() {
+            try {
+                await api('/notifications/read-all', { method: 'PUT' });
+                return true;
+            } catch (error) {
+                console.error('Mark all read error:', error);
+                return false;
+            }
+        }
+        
+        async function deleteNotificationAPI(id) {
+            try {
+                await api(`/notifications/${id}`, { method: 'DELETE' });
+                return true;
+            } catch (error) {
+                console.error('Delete notification error:', error);
+                return false;
+            }
+        }
+        
+        // ============================================
+        // Generate Mock Notifications (for testing)
+        // ============================================
+        function generateMockNotifications() {
+            return [
+                { id: 1, type: 'survey', title: 'استبيان جديد', message: 'تم إنشاء استبيان "رضا العملاء"', time: new Date(), read: false, actionable: true, actionId: 1 },
+                { id: 2, type: 'response', title: 'ردود جديدة', message: 'استقبلت 15 رداً جديداً على استبيان "تقييم الخدمة"', time: new Date(Date.now() - 3600000), read: false, actionable: true, actionId: 2 },
+                { id: 3, type: 'user', title: 'مستخدم جديد', message: 'انضم مستخدم جديد "أحمد محمد" إلى المنصة', time: new Date(Date.now() - 86400000), read: true, actionable: false },
+                { id: 4, type: 'warning', title: 'تنبيه', message: 'اقترب موعد انتهاء صلاحية استبيان "رضا العملاء"', time: new Date(Date.now() - 172800000), read: false, actionable: true, actionId: 1 },
+                { id: 5, type: 'success', title: 'اكتمل التصدير', message: 'تم تصدير بيانات الاستبيان بنجاح', time: new Date(Date.now() - 259200000), read: true, actionable: false }
+            ];
+        }
+        
+        // ============================================
+        // Load Notifications
+        // ============================================
+        async function loadNotificationsFromAPI() {
+            showSkeletonLoading();
+            
+            try {
+                // Use mock data for now (replace with real API when ready)
+                // const response = await fetchNotifications(1, 50);
+                // allNotifications = response.data || [];
+                
+                // Temporary: use mock data
+                allNotifications = generateMockNotifications();
+                updateStats();
+                filterNotifications(currentFilter);
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                showToast('فشل في تحميل الإشعارات', false);
+                document.getElementById('notificationsContainer').innerHTML = `
+                    <div class="text-center py-12 text-red-500">
+                        <i class="fas fa-exclamation-circle text-4xl mb-2"></i>
+                        <p>فشل في تحميل الإشعارات</p>
+                        <button onclick="loadNotificationsFromAPI()" class="btn-outline px-4 py-2 rounded-lg text-sm mt-3">إعادة المحاولة</button>
+                    </div>
+                `;
+            }
+        }
+        
+        // ============================================
+        // Render Notifications
+        // ============================================
+        function renderNotifications(notifications) {
+            const container = document.getElementById('notificationsContainer');
+            if (!notifications || notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-bell-slash text-gray-400 text-3xl"></i>
+                        </div>
+                        <p class="text-gray-500">لا توجد إشعارات</p>
+                        <p class="text-sm text-gray-400">ستظهر هنا الإشعارات الجديدة</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = notifications.map(notif => `
+                <div class="notification-card ${!notif.read ? 'unread' : ''} p-4 fade-in-up">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                            <i class="fas ${typeIcons[notif.type] || 'fa-bell'} ${typeColors[notif.type] || 'text-gray-500'} text-lg"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">${escapeHtml(notif.title)}</h4>
+                                    <p class="text-sm text-gray-600 mt-1">${escapeHtml(notif.message)}</p>
+                                </div>
+                                <span class="text-xs text-gray-400 whitespace-nowrap mr-3">${getTimeAgo(notif.time)}</span>
+                            </div>
+                            <div class="flex justify-between items-center mt-3">
+                                <div class="flex gap-2">
+                                    ${!notif.read ? `<button onclick="markAsRead(${notif.id})" class="mark-read text-xs text-gray-500 hover:text-[#1591DC]"><i class="fas fa-check-circle ml-1"></i> تحديد كمقروء</button>` : ''}
+                                    ${notif.actionable ? `<button onclick="handleNotificationAction(${notif.id}, '${notif.type}', ${notif.actionId})" class="text-xs text-[#1591DC] hover:text-[#2C5EAD]"><i class="fas fa-arrow-left ml-1"></i> عرض التفاصيل</button>` : ''}
+                                </div>
+                                <button onclick="deleteNotification(${notif.id})" class="text-gray-400 hover:text-red-500 text-xs">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // ============================================
+        // Filter Functions
+        // ============================================
+        function filterNotifications(filter) {
+            currentFilter = filter;
+            let filtered = [...allNotifications];
+            
+            switch(filter) {
+                case 'unread':
+                    filtered = filtered.filter(n => !n.read);
+                    break;
+                case 'read':
+                    filtered = filtered.filter(n => n.read);
+                    break;
+                case 'survey':
+                    filtered = filtered.filter(n => n.type === 'survey');
+                    break;
+                case 'user':
+                    filtered = filtered.filter(n => n.type === 'user');
+                    break;
+                case 'system':
+                    filtered = filtered.filter(n => n.type === 'system');
+                    break;
+                default:
+                    break;
+            }
+            
+            // Update filter buttons UI
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-[#2C5EAD]', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            const activeBtn = document.getElementById(`filter${filter.charAt(0).toUpperCase() + filter.slice(1)}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                activeBtn.classList.add('bg-[#2C5EAD]', 'text-white');
+            }
+            
+            renderNotifications(filtered);
+        }
+        
+        // ============================================
+        // Notification Actions
+        // ============================================
+        async function markAsRead(id) {
+            try {
+                // For real API
+                // await markNotificationRead(id);
+                
+                // For mock data
+                const notification = allNotifications.find(n => n.id === id);
+                if (notification) {
+                    notification.read = true;
+                    updateStats();
+                    filterNotifications(currentFilter);
+                    showToast('✓ تم تحديد الإشعار كمقروء', true);
+                }
+            } catch (error) {
+                showToast('✗ فشل في تحديث الإشعار', false);
+            }
+        }
+        
+        async function markAllAsRead() {
+            try {
+                // For real API
+                // await markAllNotificationsRead();
+                
+                // For mock data
+                allNotifications.forEach(n => n.read = true);
+                updateStats();
+                filterNotifications(currentFilter);
+                showToast('✓ تم تحديد جميع الإشعارات كمقروءة', true);
+            } catch (error) {
+                showToast('✗ فشل في تحديث الإشعارات', false);
+            }
+        }
+        
+        async function deleteNotification(id) {
+            try {
+                // For real API
+                // await deleteNotificationAPI(id);
+                
+                // For mock data
+                allNotifications = allNotifications.filter(n => n.id !== id);
+                updateStats();
+                filterNotifications(currentFilter);
+                showToast('✓ تم حذف الإشعار', true);
+            } catch (error) {
+                showToast('✗ فشل في حذف الإشعار', false);
+            }
+        }
+        
+        function handleNotificationAction(id, type, actionId) {
+            if (type === 'survey') {
+                window.location.href = `edit-survey.html?id=${actionId}`;
+            } else if (type === 'response') {
+                window.location.href = `responses.html?id=${actionId}`;
+            } else if (type === 'user') {
+                window.location.href = `users.html`;
+            }
+        }
+        
+        async function refreshNotifications() {
+            showToast('جاري تحديث الإشعارات...', true);
+            await loadNotificationsFromAPI();
+        }
+        
+        // ============================================
+        // Load Notification Count (for header badge)
+        // ============================================
+        async function loadNotificationCount() {
+            try {
+                const unreadCount = allNotifications.filter(n => !n.read).length;
+                const badge = document.getElementById('notificationBadge');
+                if (badge) {
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load notification count:', error);
+            }
+        }
+        
+        // ============================================
+        // Initial Load
+        // ============================================
+        const currentUser = user();
+        if (currentUser) document.getElementById('adminName').textContent = currentUser.name || 'Admin';
+        
+        // Load notifications
+        loadNotificationsFromAPI();
+    </script>
+</body>
+</html>

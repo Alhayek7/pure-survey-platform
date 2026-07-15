@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, viewport-fit=cover">
+    <title>استبياناتي | PURE Survey 2026</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #C4E2F5 0%, #E8F4FD 100%);
+            min-height: 100vh;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(75, 184, 250, 0.06);
+            animation: floatBg 25s infinite;
+        }
+        
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(50px, -50px) scale(1.2); opacity: 0.5; }
+            50% { transform: translate(-40px, 40px) scale(0.85); opacity: 0.4; }
+            75% { transform: translate(40px, 50px) scale(1.1); opacity: 0.45; }
+        }
+        
+        .header {
+            background: rgba(44, 94, 173, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            border: 1px solid rgba(196, 226, 245, 0.5);
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -12px rgba(44, 94, 173, 0.2);
+        }
+        
+        .survey-card {
+            background: white;
+            border-radius: 1rem;
+            transition: all 0.3s;
+            border: 1px solid #E2E8F0;
+            overflow: hidden;
+        }
+        
+        .survey-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px -10px rgba(44, 94, 173, 0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(44, 94, 173, 0.5);
+        }
+        
+        .btn-outline {
+            border: 1.5px solid #1591DC;
+            color: #1591DC;
+            background: white;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            color: white;
+        }
+        
+        .badge-published {
+            background: #C4E2F5;
+            color: #2C5EAD;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .badge-draft {
+            background: #FEF3C7;
+            color: #D97706;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .badge-closed {
+            background: #FEE2E2;
+            color: #DC2626;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 90px;
+            left: 20px;
+            z-index: 1100;
+            animation: slideRight 0.3s ease-out;
+        }
+        
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #C4E2F5;
+            border-top-color: #2C5EAD;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #C4E2F5; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #2C5EAD, #1591DC); border-radius: 10px; }
+        
+        .search-input {
+            transition: all 0.3s;
+            border: 1px solid #E2E8F0;
+        }
+        
+        .search-input:focus {
+            border-color: #4BB8FA;
+            box-shadow: 0 0 0 3px rgba(75, 184, 250, 0.15);
+            outline: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active { display: flex; }
+        
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            max-width: 450px;
+            width: 90%;
+            animation: modalSlide 0.3s ease-out;
+        }
+        
+        @keyframes modalSlide {
+            from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation" id="bgAnimation"></div>
+    
+    <header class="header text-white">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight">PURE Survey</h1>
+                        <p class="text-xs text-white/70">استبياناتي</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                        <i class="fas fa-microscope text-sm"></i>
+                        <span class="text-sm" id="researcherName">Researcher</span>
+                    </div>
+                    <button onclick="location.href='researcher.html'" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg text-sm transition">
+                        <i class="fas fa-arrow-right ml-1"></i> لوحة التحكم
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="relative z-10 container mx-auto px-6 py-8">
+        <div class="max-w-6xl mx-auto">
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6 fade-in-up">
+                <div class="stat-card p-4 text-center"><div class="text-2xl font-bold text-[#2C5EAD]" id="totalCount">0</div><div class="text-sm text-gray-500">إجمالي</div></div>
+                <div class="stat-card p-4 text-center"><div class="text-2xl font-bold text-green-600" id="publishedCount">0</div><div class="text-sm text-gray-500">منشور</div></div>
+                <div class="stat-card p-4 text-center"><div class="text-2xl font-bold text-yellow-600" id="draftCount">0</div><div class="text-sm text-gray-500">مسودة</div></div>
+                <div class="stat-card p-4 text-center"><div class="text-2xl font-bold text-purple-600" id="responseCount">0</div><div class="text-sm text-gray-500">إجمالي الردود</div></div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-4 mb-6 flex justify-between items-center flex-wrap gap-3 fade-in-up" style="animation-delay: 0.1s">
+                <button onclick="location.href='researcher-create.html'" class="btn-primary text-white px-5 py-2 rounded-lg text-sm">
+                    <i class="fas fa-plus ml-1"></i> استبيان جديد
+                </button>
+                <button onclick="refreshData()" class="btn-outline px-4 py-2 rounded-lg text-sm">
+                    <i class="fas fa-sync-alt ml-1"></i> تحديث
+                </button>
+                <div class="relative">
+                    <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="searchInput" placeholder="بحث عن استبيان..." class="search-input pr-8 pl-3 py-2 border border-gray-200 rounded-lg text-sm w-64">
+                </div>
+            </div>
+            
+            <!-- Surveys Grid -->
+            <div id="surveysContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 fade-in-up" style="animation-delay: 0.2s">
+                <div class="col-span-full text-center py-12">
+                    <div class="spinner mx-auto"></div>
+                    <p class="text-gray-500 mt-3">جاري تحميل الاستبيانات...</p>
+                </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-16 hidden fade-in-up">
+                <div class="w-28 h-28 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-inbox text-gray-400 text-5xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-700 mb-2">لا توجد استبيانات</h3>
+                <p class="text-gray-500 mb-6">ابدأ بإنشاء أول استبيان لك</p>
+                <button onclick="location.href='researcher-create.html'" class="btn-primary text-white px-6 py-3 rounded-xl">
+                    <i class="fas fa-plus ml-2"></i> إنشاء استبيان
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-trash-alt text-red-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">تأكيد الحذف</h3>
+            <p class="text-gray-600 mb-6" id="deleteMessage">هل أنت متأكد من حذف هذا الاستبيان؟ لا يمكن التراجع عن هذا الإجراء.</p>
+            <div class="flex gap-3 justify-center">
+                <button onclick="closeModal()" class="px-5 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition">إلغاء</button>
+                <button id="confirmDeleteBtn" class="px-5 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition">حذف</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script>
+        let allSurveys = [];
+        let currentDeleteId = null;
+        
+        function createBackgroundCircles() {
+            const container = document.getElementById('bgAnimation');
+            for (let i = 0; i < 20; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('bg-circle');
+                const size = Math.random() * 200 + 80;
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.left = Math.random() * 100 + '%';
+                circle.style.top = Math.random() * 100 + '%';
+                circle.style.animationDelay = Math.random() * 25 + 's';
+                circle.style.animationDuration = Math.random() * 20 + 15 + 's';
+                container.appendChild(circle);
+            }
+        }
+        createBackgroundCircles();
+        
+        function showToast(text, isSuccess) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            const bgColor = isSuccess ? '#10B981' : '#EF4444';
+            toast.innerHTML = `<div class="flex items-center gap-3 bg-white rounded-xl shadow-lg p-3 border-r-4" style="border-right-color: ${bgColor}"><i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span class="text-gray-700 text-sm">${text}</span></div>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function getStatusBadge(status) {
+            if (status === 'published') return '<span class="badge-published"><i class="fas fa-globe-asia ml-1 text-xs"></i> منشور</span>';
+            if (status === 'closed') return '<span class="badge-closed"><i class="fas fa-lock ml-1 text-xs"></i> مغلق</span>';
+            return '<span class="badge-draft"><i class="fas fa-pen-fancy ml-1 text-xs"></i> مسودة</span>';
+        }
+        
+        async function loadSurveys() {
+            try {
+                const surveys = await api('/surveys/my');
+                allSurveys = surveys;
+                
+                const total = surveys.length;
+                const published = surveys.filter(s => s.status === 'published').length;
+                const drafts = surveys.filter(s => s.status === 'draft' || !s.status).length;
+                let responses = 0;
+                surveys.forEach(s => responses += s.responses?.length || 0);
+                
+                document.getElementById('totalCount').textContent = total;
+                document.getElementById('publishedCount').textContent = published;
+                document.getElementById('draftCount').textContent = drafts;
+                document.getElementById('responseCount').textContent = responses;
+                
+                if (surveys.length === 0) {
+                    document.getElementById('surveysContainer').innerHTML = '';
+                    document.getElementById('emptyState').classList.remove('hidden');
+                    return;
+                }
+                document.getElementById('emptyState').classList.add('hidden');
+                
+                document.getElementById('surveysContainer').innerHTML = surveys.map(survey => `
+                    <div class="survey-card p-5 fade-in-up">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 bg-gradient-to-br from-[#C4E2F5] to-[#E8F4FD] rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-poll text-[#2C5EAD] text-lg"></i>
+                                </div>
+                                <h3 class="font-bold text-gray-800">${escapeHtml(survey.title || 'بدون عنوان')}</h3>
+                            </div>
+                            ${getStatusBadge(survey.status)}
+                        </div>
+                        <p class="text-gray-500 text-sm mb-3 line-clamp-2">${escapeHtml(survey.description || 'لا يوجد وصف')}</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2 text-sm text-gray-500">
+                                <i class="far fa-calendar-alt"></i>
+                                <span>${new Date(survey.created_at).toLocaleDateString('ar-EG')}</span>
+                            </div>
+                            <div class="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-lg">
+                                <i class="fas fa-chart-bar text-[#1591DC] text-xs"></i>
+                                <span class="text-sm font-semibold text-gray-700">${survey.responses?.length || 0}</span>
+                                <span class="text-xs text-gray-500">رد</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editSurvey(${survey.id})" class="flex-1 btn-outline px-3 py-1.5 rounded-lg text-sm flex items-center justify-center gap-1">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                            <button onclick="viewResponses(${survey.id})" class="flex-1 bg-[#C4E2F5] text-[#2C5EAD] px-3 py-1.5 rounded-lg text-sm flex items-center justify-center gap-1">
+                                <i class="fas fa-chart-bar"></i> ردود
+                            </button>
+                            <button onclick="deleteSurvey(${survey.id})" class="text-red-500 hover:text-red-700 px-2">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                const currentUser = user();
+                if (currentUser) document.getElementById('researcherName').textContent = currentUser.name || 'Researcher';
+            } catch (error) {
+                document.getElementById('surveysContainer').innerHTML = '<div class="col-span-full text-center py-12 text-red-500">فشل في تحميل الاستبيانات</div>';
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            if (!term) {
+                document.getElementById('surveysContainer').innerHTML = allSurveys.map(s => `...`).join('');
+                return;
+            }
+            const filtered = allSurveys.filter(s => (s.title || '').toLowerCase().includes(term));
+            if (filtered.length === 0) {
+                document.getElementById('surveysContainer').innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">لا توجد نتائج</div>';
+                return;
+            }
+            document.getElementById('surveysContainer').innerHTML = filtered.map(survey => `...`).join('');
+        });
+        
+        function editSurvey(id) { window.location.href = `researcher-edit.html?id=${id}`; }
+        function viewResponses(id) { window.location.href = `researcher-responses.html?id=${id}`; }
+        
+        function deleteSurvey(id) {
+            const survey = allSurveys.find(s => s.id === id);
+            currentDeleteId = id;
+            document.getElementById('deleteMessage').innerHTML = `هل أنت متأكد من حذف "${survey?.title || 'هذا الاستبيان'}"؟ لا يمكن التراجع عن هذا الإجراء.`;
+            document.getElementById('deleteModal').classList.add('active');
+            document.getElementById('confirmDeleteBtn').onclick = async () => {
+                try {
+                    await api('/surveys/' + id, { method: 'DELETE' });
+                    showToast('✓ تم حذف الاستبيان بنجاح', true);
+                    closeModal();
+                    loadSurveys();
+                } catch (error) {
+                    showToast('✗ فشل الحذف: ' + error.message, false);
+                }
+            };
+        }
+        
+        function refreshData() { showToast('جاري تحديث البيانات...', true); loadSurveys(); }
+        function closeModal() { document.getElementById('deleteModal').classList.remove('active'); }
+        
+        requireRole('researcher');
+        loadSurveys();
+    </script>
+</body>
+</html>

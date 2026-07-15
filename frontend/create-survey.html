@@ -1,0 +1,678 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, viewport-fit=cover">
+    <title>إنشاء استبيان | PURE Survey 2026</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- SortableJS لترتيب الأسئلة -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #C4E2F5 0%, #E8F4FD 100%);
+            min-height: 100vh;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(75, 184, 250, 0.08);
+            animation: floatBg 20s infinite;
+        }
+        
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(40px, -40px) scale(1.15); opacity: 0.5; }
+            50% { transform: translate(-30px, 30px) scale(0.85); opacity: 0.4; }
+            75% { transform: translate(30px, 40px) scale(1.05); opacity: 0.45; }
+        }
+        
+        .header {
+            background: rgba(44, 94, 173, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .info-card, .section-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(196, 226, 245, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .info-card:hover, .section-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px -15px rgba(44, 94, 173, 0.2);
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 1.25rem;
+            transition: all 0.3s ease;
+            border: 1px solid #E2E8F0;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+        }
+        
+        .question-card:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 10px 30px -10px rgba(44, 94, 173, 0.15);
+        }
+        
+        .drag-handle {
+            cursor: grab;
+            color: #94A3B8;
+            transition: color 0.3s;
+        }
+        
+        .drag-handle:hover {
+            color: #2C5EAD;
+        }
+        
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+        
+        .ai-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ai-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(44, 94, 173, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.4);
+        }
+        
+        .btn-outline {
+            border: 1.5px solid #1591DC;
+            color: #1591DC;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .input-field, select, textarea {
+            transition: all 0.3s ease;
+            border: 2px solid #E2E8F0;
+            background: #F8FAFE;
+            border-radius: 0.75rem;
+            padding: 10px 14px;
+            width: 100%;
+        }
+        
+        .input-field:focus, select:focus, textarea:focus {
+            border-color: #4BB8FA;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(75, 184, 250, 0.15);
+            outline: none;
+        }
+        
+        .option-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .option-input { flex: 1; }
+        
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            z-index: 1100;
+            animation: slideInRight 0.3s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #C4E2F5; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #2C5EAD, #1591DC); border-radius: 10px; }
+        
+        .q-number {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .sortable-ghost {
+            opacity: 0.4;
+            background: #C4E2F5;
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #F8FAFE, #FFFFFF);
+            border-radius: 1rem;
+            cursor: pointer;
+        }
+        
+        .section-content {
+            transition: all 0.3s ease;
+        }
+        
+        .section-content.collapsed {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation" id="bgAnimation"></div>
+    
+    <header class="header text-white">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div><h1 class="text-xl font-bold">PURE Survey</h1><p class="text-xs text-white/70">إنشاء استبيان جديد</p></div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                        <i class="fas fa-user-shield text-sm"></i>
+                        <span class="text-sm" id="userName">Loading...</span>
+                    </div>
+                    <button onclick="location.href='admin-surveys.html'" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg text-sm transition">
+                        <i class="fas fa-arrow-right ml-1"></i> عودة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="relative z-10 container mx-auto px-6 py-8">
+        <div class="max-w-4xl mx-auto">
+            
+            <!-- AI Assistant Card -->
+            <div class="ai-card text-white p-6 mb-8">
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-robot text-2xl"></i>
+                        </div>
+                        <div><h2 class="text-xl font-bold">المساعد الذكي AI</h2><p class="text-sm text-white/80">أنا هنا لمساعدتك</p></div>
+                    </div>
+                    <div class="flex gap-3 flex-wrap">
+                        <button onclick="generateAISuggestions()" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl text-sm transition">
+                            <i class="fas fa-lightbulb"></i> اقتراح أسئلة
+                        </button>
+                        <button onclick="analyzeTitle()" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl text-sm transition">
+                            <i class="fas fa-chart-line"></i> تحليل العنوان
+                        </button>
+                    </div>
+                    <div id="aiSuggestionsPanel" class="hidden mt-4">
+                        <div class="bg-white/10 rounded-xl p-4">
+                            <p class="text-sm font-semibold mb-2">الاقتراحات:</p>
+                            <div id="suggestionsList" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Survey Info Card -->
+            <div class="info-card p-6 mb-8">
+                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-info-circle text-[#1591DC]"></i> معلومات الاستبيان
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">عنوان الاستبيان <span class="text-red-500">*</span></label>
+                        <input type="text" id="surveyTitle" class="input-field" placeholder="مثال: استبيان رضا العملاء">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">وصف الاستبيان</label>
+                        <textarea id="surveyDesc" rows="3" class="input-field" placeholder="وصف مختصر للاستبيان..."></textarea>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="isPublic" class="w-5 h-5 rounded" style="accent-color: #1591DC;" checked>
+                        <label class="text-sm text-gray-700">🌍 استبيان عام (متاح للجميع)</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sections Container -->
+            <div id="sectionsContainer" class="space-y-6 mb-8"></div>
+            
+            <!-- Add Section Button -->
+            <div class="text-center mb-8">
+                <button onclick="addSection()" class="btn-outline px-6 py-3 rounded-xl text-sm font-semibold">
+                    <i class="fas fa-folder-plus ml-2"></i> إضافة قسم جديد
+                </button>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex gap-4">
+                <button onclick="saveSurvey(false)" id="saveBtn" class="btn-primary text-white px-6 py-3 rounded-xl flex-1 font-semibold text-lg">
+                    <i class="fas fa-save ml-2"></i> حفظ الاستبيان
+                </button>
+                <button onclick="saveSurvey(true)" id="publishBtn" class="btn-success text-white px-6 py-3 rounded-xl flex-1 font-semibold text-lg">
+                    <i class="fas fa-globe ml-2"></i> حفظ ونشر
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <script src="js/api.js"></script>
+    <script>
+        let sections = [];
+        let sectionCounter = 0;
+        let questionCounter = 0;
+        let sortableInstances = [];
+        
+        // Background animation
+        function createBackgroundCircles() {
+            const container = document.getElementById('bgAnimation');
+            for (let i = 0; i < 20; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('bg-circle');
+                const size = Math.random() * 300 + 100;
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.left = Math.random() * 100 + '%';
+                circle.style.top = Math.random() * 100 + '%';
+                circle.style.animationDelay = Math.random() * 25 + 's';
+                circle.style.animationDuration = Math.random() * 20 + 15 + 's';
+                container.appendChild(circle);
+            }
+        }
+        createBackgroundCircles();
+        
+        function showToast(text, isSuccess) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            const bgColor = isSuccess ? '#10B981' : '#EF4444';
+            toast.innerHTML = `<div class="flex items-center gap-3 bg-white rounded-xl shadow-lg p-3 border-r-4" style="border-right-color: ${bgColor}"><i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${text}</span></div>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+        }
+        
+        // ============================================
+        // Section Management
+        // ============================================
+        function addSection(sectionData = null) {
+            sectionCounter++;
+            const sectionId = sectionCounter;
+            const sectionTitle = sectionData?.title || `قسم ${sectionCounter}`;
+            const sectionDesc = sectionData?.description || '';
+            const questions = sectionData?.questions || [];
+            
+            const container = document.getElementById('sectionsContainer');
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = 'section-card overflow-hidden';
+            sectionDiv.setAttribute('data-section-id', sectionId);
+            sectionDiv.innerHTML = `
+                <div class="section-header p-4 flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-folder-open text-[#2C5EAD] text-lg"></i>
+                        <input type="text" class="section-title-input font-bold text-gray-800 bg-transparent border-none focus:outline-none focus:ring-0" value="${escapeHtml(sectionTitle)}" placeholder="عنوان القسم" style="min-width: 150px;">
+                        <span class="text-xs text-gray-400 questions-count">(0 أسئلة)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleSection(this)" class="text-gray-500 hover:text-gray-700"><i class="fas fa-chevron-up"></i></button>
+                        <button onclick="deleteSection(${sectionId})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="section-content p-4 border-t border-gray-100">
+                    <div class="mb-3">
+                        <textarea class="section-desc-input input-field text-sm" rows="2" placeholder="وصف القسم (اختياري)">${escapeHtml(sectionDesc)}</textarea>
+                    </div>
+                    <div class="questions-container" data-section="${sectionId}" data-sortable-id="section-${sectionId}">
+                        ${questions.map(q => renderQuestionHTML(q, sectionId)).join('')}
+                    </div>
+                    <button onclick="addQuestionToSection(${sectionId})" class="btn-outline text-sm px-3 py-1.5 rounded-lg mt-3">
+                        <i class="fas fa-plus ml-1"></i> إضافة سؤال
+                    </button>
+                </div>
+            `;
+            container.appendChild(sectionDiv);
+            
+            // Initialize Sortable for this section
+            const questionsContainer = sectionDiv.querySelector('.questions-container');
+            const sortable = new Sortable(questionsContainer, {
+                handle: '.drag-handle',
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function() { updateQuestionsOrder(); }
+            });
+            sortableInstances.push(sortable);
+            
+            // Store section
+            sections.push({ id: sectionId, title: sectionTitle, description: sectionDesc, questions: questions });
+            updateQuestionsCount();
+        }
+        
+        function renderQuestionHTML(question, sectionId) {
+            questionCounter++;
+            const qId = questionCounter;
+            return `
+                <div class="question-card p-4" data-question-id="${qId}" data-section-id="${sectionId}">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-grip-vertical drag-handle cursor-move text-gray-400"></i>
+                            <span class="q-number">${qId}</span>
+                            <input type="text" class="question-text font-medium text-gray-800 border-none bg-transparent focus:outline-none focus:ring-0" style="min-width: 200px;" value="${escapeHtml(question.question_text || 'سؤال جديد')}" placeholder="نص السؤال">
+                        </div>
+                        <button onclick="this.closest('.question-card').remove(); updateQuestionsOrder(); updateQuestionsCount();" class="text-gray-400 hover:text-red-500"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                    <div class="space-y-3 mr-7">
+                        <select class="question-type input-field" onchange="toggleOptions(this)">
+                            <option value="short_text" ${question.question_type === 'short_text' ? 'selected' : ''}>📝 نص قصير</option>
+                            <option value="long_text" ${question.question_type === 'long_text' ? 'selected' : ''}>📄 نص طويل</option>
+                            <option value="multiple_choice" ${question.question_type === 'multiple_choice' ? 'selected' : ''}>🔘 اختيار من متعدد</option>
+                            <option value="rating" ${question.question_type === 'rating' ? 'selected' : ''}>⭐ تقييم 1-5</option>
+                            <option value="date" ${question.question_type === 'date' ? 'selected' : ''}>📅 تاريخ</option>
+                        </select>
+                        <div class="options-container" style="display: ${question.question_type === 'multiple_choice' ? 'block' : 'none'}">
+                            <label class="text-sm text-gray-600">الخيارات:</label>
+                            <div class="options-list space-y-2 mt-1">
+                                ${renderOptions(question.options || [])}
+                            </div>
+                            <button type="button" class="text-[#1591DC] text-sm mt-2" onclick="addOption(this)">+ إضافة خيار</button>
+                        </div>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="required-check" ${question.is_required ? 'checked' : ''}>
+                            <span class="text-sm text-gray-600">سؤال إجباري</span>
+                        </label>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderOptions(options) {
+            if (!options || options.length === 0) {
+                return `<div class="option-row"><input type="text" class="option-input input-field" placeholder="خيار 1"></div>`;
+            }
+            return options.map(opt => `
+                <div class="option-row">
+                    <input type="text" class="option-input input-field" value="${escapeHtml(opt.option_text)}">
+                    <button onclick="this.parentElement.remove()" class="text-red-500"><i class="fas fa-times"></i></button>
+                </div>
+            `).join('');
+        }
+        
+        window.toggleOptions = function(select) {
+            const container = select.closest('.space-y-3').querySelector('.options-container');
+            if (container) container.style.display = select.value === 'multiple_choice' ? 'block' : 'none';
+        };
+        
+        window.addOption = function(btn) {
+            const container = btn.closest('.options-container').querySelector('.options-list');
+            const div = document.createElement('div');
+            div.className = 'option-row';
+            div.innerHTML = `<input type="text" class="option-input input-field" placeholder="خيار جديد"><button onclick="this.parentElement.remove()" class="text-red-500"><i class="fas fa-times"></i></button>`;
+            container.appendChild(div);
+        };
+        
+        function addQuestionToSection(sectionId) {
+            const sectionDiv = document.querySelector(`.section-card[data-section-id="${sectionId}"]`);
+            const questionsContainer = sectionDiv.querySelector('.questions-container');
+            const newQuestion = { question_text: '', question_type: 'short_text', is_required: false, options: [] };
+            const questionHTML = renderQuestionHTML(newQuestion, sectionId);
+            questionsContainer.insertAdjacentHTML('beforeend', questionHTML);
+            updateQuestionsOrder();
+            updateQuestionsCount();
+        }
+        
+        function updateQuestionsOrder() {
+            document.querySelectorAll('.section-card').forEach(section => {
+                const questions = section.querySelectorAll('.question-card');
+                questions.forEach((q, idx) => {
+                    const qNumber = q.querySelector('.q-number');
+                    if (qNumber) qNumber.textContent = idx + 1;
+                });
+            });
+        }
+        
+        function updateQuestionsCount() {
+            document.querySelectorAll('.section-card').forEach(section => {
+                const questionsCount = section.querySelectorAll('.question-card').length;
+                const countSpan = section.querySelector('.questions-count');
+                if (countSpan) countSpan.textContent = `(${questionsCount} ${questionsCount === 1 ? 'سؤال' : 'أسئلة'})`;
+            });
+        }
+        
+        window.toggleSection = function(btn) {
+            const content = btn.closest('.section-card').querySelector('.section-content');
+            const icon = btn.querySelector('i');
+            content.classList.toggle('collapsed');
+            icon.classList.toggle('fa-chevron-up');
+            icon.classList.toggle('fa-chevron-down');
+        };
+        
+        window.deleteSection = function(sectionId) {
+            if (confirm('هل أنت متأكد من حذف هذا القسم وجميع أسئلته؟')) {
+                const section = document.querySelector(`.section-card[data-section-id="${sectionId}"]`);
+                section.remove();
+                sections = sections.filter(s => s.id !== sectionId);
+                updateQuestionsCount();
+                showToast('✓ تم حذف القسم', true);
+            }
+        };
+        
+        function collectAllData() {
+            const title = document.getElementById('surveyTitle').value.trim();
+            const description = document.getElementById('surveyDesc').value;
+            const is_public = document.getElementById('isPublic').checked;
+            const sectionsData = [];
+            
+            document.querySelectorAll('.section-card').forEach((section, sectionIndex) => {
+                const sectionTitle = section.querySelector('.section-title-input').value;
+                const sectionDesc = section.querySelector('.section-desc-input').value;
+                const questions = [];
+                
+                section.querySelectorAll('.question-card').forEach((question, qIndex) => {
+                    const questionText = question.querySelector('.question-text').value;
+                    const questionType = question.querySelector('.question-type').value;
+                    const isRequired = question.querySelector('.required-check').checked;
+                    let options = [];
+                    
+                    if (questionType === 'multiple_choice') {
+                        const optionInputs = question.querySelectorAll('.option-input');
+                        options = Array.from(optionInputs).map((input, i) => ({
+                            option_text: input.value,
+                            option_value: input.value,
+                            order_number: i + 1
+                        })).filter(opt => opt.option_text.trim());
+                    }
+                    
+                    if (questionText.trim()) {
+                        questions.push({
+                            question_text: questionText,
+                            question_type: questionType,
+                            is_required: isRequired,
+                            order_number: qIndex + 1,
+                            options: options
+                        });
+                    }
+                });
+                
+                sectionsData.push({
+                    title: sectionTitle,
+                    description: sectionDesc,
+                    order_number: sectionIndex + 1,
+                    questions: questions
+                });
+            });
+            
+            return { title, description, is_public, sections: sectionsData };
+        }
+        
+        async function saveSurvey(publish = false) {
+            const data = collectAllData();
+            if (!data.title) { showToast('الرجاء إدخال عنوان الاستبيان', false); return; }
+            if (data.sections.length === 0 || data.sections.every(s => s.questions.length === 0)) {
+                showToast('الرجاء إضافة قسم وسؤال واحد على الأقل', false);
+                return;
+            }
+            
+            const saveBtn = document.getElementById('saveBtn');
+            const publishBtn = document.getElementById('publishBtn');
+            saveBtn.disabled = true;
+            publishBtn.disabled = true;
+            saveBtn.innerHTML = '<div class="spinner mx-auto"></div>';
+            publishBtn.innerHTML = '<div class="spinner mx-auto"></div>';
+            
+            try {
+                const response = await api('/surveys', { method: 'POST', body: JSON.stringify(data) });
+                if (publish && response.id) await api('/surveys/' + response.id + '/publish', { method: 'POST' });
+                showToast(publish ? '✓ تم نشر الاستبيان بنجاح!' : '✓ تم حفظ الاستبيان بنجاح!', true);
+                setTimeout(() => window.location.href = 'admin-surveys.html', 1500);
+            } catch (error) {
+                showToast('✗ خطأ: ' + (error.message || 'فشل في حفظ الاستبيان'), false);
+                saveBtn.disabled = false;
+                publishBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save ml-2"></i> حفظ الاستبيان';
+                publishBtn.innerHTML = '<i class="fas fa-globe ml-2"></i> حفظ ونشر';
+            }
+        }
+        
+        // AI Functions
+        window.generateAISuggestions = async function() {
+            const title = document.getElementById('surveyTitle')?.value || '';
+            const panel = document.getElementById('aiSuggestionsPanel');
+            const suggestionsList = document.getElementById('suggestionsList');
+            panel.classList.remove('hidden');
+            suggestionsList.innerHTML = '<div class="spinner mx-auto"></div>';
+            try {
+                const response = await api('/analytics/suggest-questions', { method: 'POST', body: JSON.stringify({ title }) });
+                if (response.success && response.data) {
+                    suggestionsList.innerHTML = response.data.map(s => `
+                        <div class="flex justify-between items-center bg-white/10 p-2 rounded-lg">
+                            <span class="text-sm">${s}</span>
+                            <button onclick="addQuestionToFirstSection('${escapeHtml(s)}')" class="text-white"><i class="fas fa-plus-circle"></i></button>
+                        </div>
+                    `).join('');
+                }
+            } catch(e) { suggestionsList.innerHTML = '<p class="text-sm">فشل التحميل</p>'; }
+        };
+        
+        window.addQuestionToFirstSection = function(text) {
+            const firstSection = document.querySelector('.section-card');
+            if (firstSection) {
+                addQuestionToSection(parseInt(firstSection.getAttribute('data-section-id')));
+                const lastQuestion = firstSection.querySelector('.question-card:last-child .question-text');
+                if (lastQuestion) lastQuestion.value = text;
+                showToast('✓ تم إضافة السؤال', true);
+            } else { showToast('الرجاء إضافة قسم أولاً', false); }
+        };
+        
+        window.analyzeTitle = async function() {
+            const title = document.getElementById('surveyTitle')?.value;
+            if (!title) { showToast('الرجاء إدخال عنوان الاستبيان أولاً', false); return; }
+            try {
+                const response = await api('/analytics/sentiment', { method: 'POST', body: JSON.stringify({ text: title }) });
+                if (response.success) {
+                    const sentiments = { positive: 'إيجابي 😊', neutral: 'محايد 😐', negative: 'سلبي 😞' };
+                    showToast(`📊 تحليل العنوان: ${sentiments[response.data.sentiment]}`, true);
+                }
+            } catch(e) { showToast('فشل التحليل', false); }
+        };
+        
+        // Initialization
+        document.getElementById('userName').textContent = user()?.name || 'Admin';
+        addSection({ title: 'المعلومات الشخصية', description: 'البيانات الأساسية للمشارك', questions: [
+            { question_text: 'الاسم', question_type: 'short_text', is_required: true, options: [] },
+            { question_text: 'رقم الجوال', question_type: 'short_text', is_required: true, options: [] }
+        ]});
+        addSection({ title: 'الرأي العام', description: 'تقييم الخدمات المقدمة', questions: [] });
+        
+        requireRole('admin', 'researcher');
+    </script>
+</body>
+</html>

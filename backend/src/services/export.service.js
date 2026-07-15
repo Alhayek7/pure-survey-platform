@@ -1,0 +1,5 @@
+﻿const ExcelJS = require('exceljs');
+const { getSurveyResponses } = require('./response.service');
+const { Survey, Question } = require('../models');
+async function surveyWorkbook(surveyId) { const survey = await Survey.findByPk(surveyId, { include: [{ model: Question, as: 'questions' }] }); if (!survey) { const err = new Error('Survey not found'); err.status = 404; throw err; } const responses = await getSurveyResponses(surveyId); const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet('Responses'); const questions = [...survey.questions].sort((a,b) => a.order_number - b.order_number); ws.columns = [{ header: 'Response ID', key: 'id' }, { header: 'Submitted At', key: 'submitted_at' }, ...questions.map(q => ({ header: q.question_text, key: 'q_' + q.id, width: 30 }))]; for (const r of responses) { const row = { id: r.id, submitted_at: r.submitted_at }; for (const a of r.answers) row['q_' + a.question_id] = a.answer_value; ws.addRow(row); } return wb; }
+module.exports = { surveyWorkbook };

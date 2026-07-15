@@ -1,0 +1,633 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, viewport-fit=cover">
+    <title>PURE Survey 2026 | منصة الاستبيانات الذكية</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        html, body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: fixed;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #2C5EAD 0%, #1591DC 50%, #4BB8FA 100%);
+            position: relative;
+        }
+        
+        /* Animated gradient overlay */
+        .gradient-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        /* Animated background circles */
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(196, 226, 245, 0.12);
+            pointer-events: none;
+            animation: floatBg 25s infinite;
+            backdrop-filter: blur(3px);
+        }
+        
+        @keyframes floatBg {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.3;
+            }
+            25% {
+                transform: translate(40px, -40px) scale(1.15);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translate(-30px, 30px) scale(0.85);
+                opacity: 0.4;
+            }
+            75% {
+                transform: translate(30px, 40px) scale(1.05);
+                opacity: 0.45;
+            }
+        }
+        
+        /* Glass morphism card - enhanced */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Modern input fields */
+        .input-field {
+            transition: all 0.3s ease;
+            border: 2px solid #E2E8F0;
+            background: white;
+            font-size: 0.9rem;
+        }
+        
+        .input-field:focus {
+            border-color: #4BB8FA;
+            box-shadow: 0 0 0 4px rgba(75, 184, 250, 0.15);
+            outline: none;
+            transform: scale(1.01);
+        }
+        
+        /* Gradient buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(44, 94, 173, 0.5);
+        }
+        
+        /* Demo buttons */
+        .btn-admin {
+            background: linear-gradient(135deg, #DC2626, #B91C1C);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4);
+        }
+        
+        .btn-researcher {
+            background: linear-gradient(135deg, #059669, #047857);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-researcher:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.4);
+        }
+        
+        .btn-user {
+            background: linear-gradient(135deg, #7C3AED, #6D28D9);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-user:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+        
+        /* Spinner animation */
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 2px solid white;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.6s linear infinite;
+            display: inline-block;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Password toggle */
+        .password-toggle {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .password-toggle:hover {
+            color: #1591DC;
+            transform: scale(1.1);
+        }
+        
+        /* Demo cards */
+        .demo-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 15px 30px -12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Pulse animation for notification */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #C4E2F5;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #1591DC;
+            border-radius: 10px;
+        }
+        
+        /* Year badge */
+        .year-badge {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 20;
+        }
+    </style>
+</head>
+<body>
+    <!-- Gradient overlay -->
+    <div class="gradient-overlay"></div>
+    
+    <!-- Animated background circles -->
+    <div id="bgCircles"></div>
+    
+    <!-- Year badge -->
+    <div class="year-badge">
+        <i class="fas fa-chart-line ml-1"></i> PURE Survey Platform 2026
+    </div>
+    
+    <div class="relative z-10 h-screen w-screen flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-5xl p-8" data-aos="zoom-in" data-aos-duration="800">
+            <!-- Logo Section -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 shadow-lg" style="background: linear-gradient(135deg, #2C5EAD, #1591DC); box-shadow: 0 10px 25px -5px rgba(44,94,173,0.3);">
+                    <i class="fas fa-chart-line text-white text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold tracking-tight" style="color: #2C5EAD;">PURE Survey</h1>
+                <p class="text-sm mt-2" style="color: #1591DC;">منصة الاستبيانات الذكية - الإصدار 3.0</p>
+            </div>
+            
+            <!-- Message Container -->
+            <div id="messageContainer" class="mb-4 min-h-[60px]"></div>
+            
+            <!-- Two Column Layout -->
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Left Side: Login Form -->
+                <div data-aos="fade-left" data-aos-duration="800" data-aos-delay="200">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">مرحباً بعودتك</h3>
+                        <p class="text-sm text-gray-500">سجل دخولك للوصول إلى لوحة التحكم</p>
+                    </div>
+                    
+                    <form id="loginForm" class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2" style="color: #2C5EAD;">
+                                <i class="fas fa-envelope ml-1" style="color: #4BB8FA;"></i>
+                                البريد الإلكتروني
+                            </label>
+                            <div class="relative group">
+                                <i class="fas fa-envelope absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm transition-colors group-focus-within:text-[#1591DC]"></i>
+                                <input type="email" id="email" name="email" class="input-field w-full pr-10 pl-4 py-3 rounded-xl" placeholder="admin@example.com" autocomplete="email" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold mb-2" style="color: #2C5EAD;">
+                                <i class="fas fa-lock ml-1" style="color: #4BB8FA;"></i>
+                                كلمة المرور
+                            </label>
+                            <div class="relative group">
+                                <i class="fas fa-key absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                                <input type="password" id="password" name="password" class="input-field w-full pr-10 pl-10 py-3 rounded-xl" placeholder="••••••••" autocomplete="current-password" required>
+                                <i class="fas fa-eye password-toggle absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" onclick="togglePassword()"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center cursor-pointer group">
+                                <input type="checkbox" id="rememberMe" class="w-4 h-4 rounded transition-all" style="accent-color: #1591DC;">
+                                <span class="mr-2 text-sm text-gray-600 group-hover:text-[#1591DC] transition">تذكرني</span>
+                            </label>
+                            <a href="#" class="text-sm text-[#1591DC] hover:text-[#2C5EAD] transition">نسيت كلمة المرور؟</a>
+                        </div>
+                        
+                        <button type="submit" id="loginBtn" class="btn-primary w-full text-white py-3 rounded-xl font-semibold transition-all">
+                            <span class="flex items-center justify-center gap-2">
+                                <i class="fas fa-sign-in-alt text-sm"></i>
+                                تسجيل الدخول
+                            </span>
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-6">
+                        <p class="text-sm text-gray-500">
+                            ليس لديك حساب؟
+                            <a href="register.html" class="font-semibold text-[#1591DC] hover:text-[#2C5EAD] transition">إنشاء حساب جديد</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Right Side: Demo Accounts -->
+                <div data-aos="fade-right" data-aos-duration="800" data-aos-delay="300">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">تسجيل دخول تجريبي</h3>
+                        <p class="text-sm text-gray-500">اختر حساباً لتجربة المنصة مباشرة</p>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <!-- Admin Demo Card -->
+                        <div class="demo-card bg-gradient-to-r from-red-50 to-white rounded-xl p-3 border-2 border-red-200 transition-all cursor-pointer" onclick="demoLogin('admin@example.com', 'admin123', 'admin')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-md">
+                                    <i class="fas fa-crown text-white text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-gray-800">مدير النظام</span>
+                                        <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-semibold">Super Admin</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-0.5">admin@example.com</p>
+                                </div>
+                                <button class="btn-admin text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all">
+                                    دخول <i class="fas fa-arrow-left mr-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Researcher Demo Card -->
+                        <div class="demo-card bg-gradient-to-r from-green-50 to-white rounded-xl p-3 border-2 border-green-200 transition-all cursor-pointer" onclick="demoLogin('researcher@example.com', 'admin123', 'researcher')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-md">
+                                    <i class="fas fa-microscope text-white text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-gray-800">باحث</span>
+                                        <span class="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded-full font-semibold">Researcher</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-0.5">researcher@example.com</p>
+                                </div>
+                                <button class="btn-researcher text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all">
+                                    دخول <i class="fas fa-arrow-left mr-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- User Demo Card -->
+                        <div class="demo-card bg-gradient-to-r from-purple-50 to-white rounded-xl p-3 border-2 border-purple-200 transition-all cursor-pointer" onclick="demoLogin('user@example.com', 'admin123', 'user')">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-md">
+                                    <i class="fas fa-user text-white text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-gray-800">مستخدم عادي</span>
+                                        <span class="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full font-semibold">Standard User</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-0.5">user@example.com</p>
+                                </div>
+                                <button class="btn-user text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all">
+                                    دخول <i class="fas fa-arrow-left mr-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Info Box -->
+                    <div class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-indigo-100">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-info-circle text-indigo-500 text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800 mb-2">📌 حسابات التجربة</p>
+                                <div class="space-y-1 text-xs text-gray-600">
+                                    <p class="flex items-center gap-2"><span class="w-2 h-2 bg-red-500 rounded-full"></span> <span class="font-mono text-red-600">admin@example.com</span> / <span class="font-mono">admin123</span> - صلاحية كاملة</p>
+                                    <p class="flex items-center gap-2"><span class="w-2 h-2 bg-green-500 rounded-full"></span> <span class="font-mono text-green-600">researcher@example.com</span> / <span class="font-mono">admin123</span> - إنشاء وإدارة الاستبيانات</p>
+                                    <p class="flex items-center gap-2"><span class="w-2 h-2 bg-purple-500 rounded-full"></span> <span class="font-mono text-purple-600">user@example.com</span> / <span class="font-mono">admin123</span> - الإجابة على الاستبيانات</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div class="mt-6 flex justify-center gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-bold text-[#2C5EAD]">+10K</div>
+                            <div class="text-xs text-gray-500">استبيان</div>
+                        </div>
+                        <div class="w-px bg-gray-200"></div>
+                        <div>
+                            <div class="text-2xl font-bold text-[#1591DC]">+50K</div>
+                            <div class="text-xs text-gray-500">مستخدم</div>
+                        </div>
+                        <div class="w-px bg-gray-200"></div>
+                        <div>
+                            <div class="text-2xl font-bold text-[#4BB8FA]">+100K</div>
+                            <div class="text-xs text-gray-500">رد</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            once: true,
+            duration: 800,
+            disable: window.innerWidth < 768
+        });
+        
+        // Create background circles
+        function createBackgroundCircles() {
+            const container = document.getElementById('bgCircles');
+            for (let i = 0; i < 20; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('bg-circle');
+                const size = Math.random() * 250 + 80;
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.left = Math.random() * 100 + '%';
+                circle.style.top = Math.random() * 100 + '%';
+                circle.style.animationDelay = Math.random() * 25 + 's';
+                circle.style.animationDuration = Math.random() * 20 + 15 + 's';
+                container.appendChild(circle);
+            }
+        }
+        createBackgroundCircles();
+        
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('.password-toggle');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        // Show message function
+        function showMessage(text, isSuccess) {
+            const container = document.getElementById('messageContainer');
+            if (!container) return;
+            const bgColor = isSuccess ? '#F0FDF4' : '#FEF2F2';
+            const textColor = isSuccess ? '#166534' : '#991B1B';
+            const icon = isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle';
+            const borderColor = isSuccess ? '#BBF7D0' : '#FECACA';
+            container.innerHTML = `
+                <div class="p-3 rounded-xl shadow-sm" style="background-color: ${bgColor}; color: ${textColor}; border: 1px solid ${borderColor};">
+                    <div class="flex items-center gap-2 text-sm">
+                        <i class="fas ${icon}"></i>
+                        <span>${text}</span>
+                    </div>
+                </div>
+            `;
+            setTimeout(() => {
+                if (container.firstChild) container.innerHTML = '';
+            }, 4000);
+        }
+        
+        // Demo login function
+        async function demoLogin(email, password, role) {
+            const cards = document.querySelectorAll('.demo-card');
+            let targetBtn = null;
+            for (const card of cards) {
+                if (card.querySelector('button') && card.onclick.toString().includes(email)) {
+                    targetBtn = card.querySelector('button');
+                    break;
+                }
+            }
+            if (!targetBtn) return;
+            
+            const originalText = targetBtn.innerHTML;
+            targetBtn.innerHTML = '<div class="spinner mx-auto"></div>';
+            targetBtn.disabled = true;
+            
+            try {
+                const response = await api('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                setSession(response);
+                
+                let roleName = '';
+                if (role === 'admin') roleName = 'مدير';
+                else if (role === 'researcher') roleName = 'باحث';
+                else roleName = 'مستخدم';
+                
+                showMessage(`✓ تم تسجيل الدخول بنجاح كـ ${roleName}! جاري التحويل...`, true);
+                
+                setTimeout(() => {
+                    if (role === 'admin') window.location.href = 'admin.html';
+                    else if (role === 'researcher') window.location.href = 'researcher.html';
+                    else window.location.href = 'dashboard.html';
+                }, 1000);
+                
+            } catch (error) {
+                let errorMsg = error.message;
+                if (errorMsg.includes('Invalid credentials')) errorMsg = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+                showMessage('✗ فشل تسجيل الدخول: ' + errorMsg, false);
+                targetBtn.innerHTML = originalText;
+                targetBtn.disabled = false;
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const loginBtn = document.getElementById('loginBtn');
+            const originalHtml = loginBtn.innerHTML;
+            
+            if (!email || !password) {
+                showMessage('الرجاء إدخال البريد الإلكتروني وكلمة المرور', false);
+                return;
+            }
+            
+            loginBtn.innerHTML = '<span class="flex items-center justify-center gap-2"><div class="spinner"></div> جاري الدخول...</span>';
+            loginBtn.disabled = true;
+            
+            try {
+                const response = await api('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                setSession(response);
+                
+                if (rememberMe) {
+                    localStorage.setItem('rememberMe', 'true');
+                }
+                
+                showMessage('✓ تم تسجيل الدخول بنجاح! جاري التحويل...', true);
+                
+                const role = response.user.role;
+                let redirectUrl = 'dashboard.html';
+                if (role === 'admin') redirectUrl = 'admin.html';
+                else if (role === 'researcher') redirectUrl = 'researcher.html';
+                
+                setTimeout(() => {
+                    window.location.href = redirectUrl;
+                }, 1000);
+                
+} catch (error) {
+    let errorMessage = error.message;
+    
+    // رسائل خطأ مخصصة حسب نوع المشكلة
+    if (errorMessage.includes('Invalid credentials')) {
+        errorMessage = '❌ البريد الإلكتروني أو كلمة المرور غير صحيحة';
+    } 
+    else if (errorMessage.includes('NetworkError') || errorMessage.includes('fetch') || errorMessage.includes('Failed to fetch')) {
+        errorMessage = '⚠️ لا يمكن الاتصال بالخادم. تأكد من تشغيل الخادم (npm start)';
+    }
+    else if (errorMessage.includes('timeout')) {
+        errorMessage = '⏱️ انتهت مهلة الاتصال. حاول مرة أخرى';
+    }
+    else if (errorMessage.includes('500')) {
+        errorMessage = '🔧 خطأ في الخادم. يرجى المحاولة لاحقاً';
+    }
+    else if (errorMessage.includes('429')) {
+        errorMessage = '🚫 تم تجاوز عدد المحاولات. يرجى الانتظار 15 دقيقة';
+    }
+    else if (errorMessage.includes('401')) {
+        errorMessage = '🔐 جلسة منتهية. يرجى تسجيل الدخول مرة أخرى';
+    }
+    else {
+        errorMessage = '❗ ' + errorMessage;
+    }
+    
+    showMessage(errorMessage, false);
+    loginBtn.innerHTML = originalHtml;
+    loginBtn.disabled = false;
+}
+        });
+        
+        // Check if user is already logged in
+        if (typeof token === 'function' && token() && typeof user === 'function' && user()) {
+            const currentUser = user();
+            const role = currentUser.role;
+            if (role === 'admin') window.location.href = 'admin.html';
+            else if (role === 'researcher') window.location.href = 'researcher.html';
+            else if (role === 'user') window.location.href = 'dashboard.html';
+        }
+
+        // التحقق من صحة البريد الإلكتروني أثناء الكتابة
+document.getElementById('email').addEventListener('input', function(e) {
+    const email = e.target.value;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email)) {
+        this.style.borderColor = '#EF4444';
+    } else {
+        this.style.borderColor = '#E2E8F0';
+    }
+});
+
+    </script>
+</body>
+</html>

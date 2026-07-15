@@ -1,0 +1,513 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, viewport-fit=cover">
+    <title>تعديل استبيان | PURE Survey</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #C4E2F5 0%, #E8F4FD 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(196, 226, 245, 0.5);
+        }
+        
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(44, 94, 173, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px -5px rgba(44, 94, 173, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #059669, #047857);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px -5px rgba(5, 150, 105, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #D97706, #B45309);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px -5px rgba(217, 119, 6, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #DC2626, #B91C1C);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px -5px rgba(220, 38, 38, 0.4);
+        }
+        
+        .btn-outline {
+            border: 1px solid #1591DC;
+            color: #1591DC;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline:hover {
+            background: #1591DC;
+            color: white;
+        }
+        
+        .input-field, select, textarea {
+            transition: all 0.3s ease;
+            border: 2px solid #E2E8F0;
+            background: white;
+            border-radius: 0.5rem;
+            padding: 8px 12px;
+            width: 100%;
+        }
+        
+        .input-field:focus, select:focus, textarea:focus {
+            border-color: #4BB8FA;
+            box-shadow: 0 0 0 3px rgba(75, 184, 250, 0.2);
+            outline: none;
+        }
+        
+        .badge-published {
+            background: #C4E2F5;
+            color: #2C5EAD;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-draft {
+            background: #FEF3C7;
+            color: #D97706;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-closed {
+            background: #FEE2E2;
+            color: #DC2626;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #C4E2F5;
+            border-top-color: #2C5EAD;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .option-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">PURE Survey</h1>
+                        <p class="text-xs text-white/70">تعديل استبيان</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg">
+                        <i class="fas fa-user-shield text-sm"></i>
+                        <span class="text-sm" id="adminName">Admin</span>
+                    </div>
+                    <button onclick="location.href='admin-surveys.html'" class="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-sm transition">
+                        <i class="fas fa-arrow-right ml-1"></i> عودة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-6">
+        <div class="max-w-4xl mx-auto">
+            <!-- Survey Info -->
+            <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">📝 معلومات الاستبيان</h2>
+                    <div id="statusBadge"></div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">عنوان الاستبيان *</label>
+                        <input type="text" id="title" class="input-field" placeholder="أدخل عنوان الاستبيان">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">وصف الاستبيان</label>
+                        <textarea id="description" rows="3" class="input-field" placeholder="وصف مختصر للاستبيان"></textarea>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="isPublic" class="w-4 h-4" style="accent-color: #1591DC;">
+                        <label class="text-sm text-gray-700">استبيان عام (متاح للجميع)</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Questions Section -->
+            <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">📋 الأسئلة</h2>
+                    <button onclick="addQuestion()" class="btn-outline px-4 py-2 rounded-lg text-sm">
+                        <i class="fas fa-plus ml-1"></i> إضافة سؤال
+                    </button>
+                </div>
+                <div id="questionsContainer" class="space-y-4"></div>
+                <p class="text-xs text-gray-400 mt-3 text-center">يمكنك إضافة أسئلة من أنواع مختلفة (نص، اختيارات، تقييم)</p>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex gap-3">
+                <button onclick="saveSurvey()" id="saveBtn" class="btn-primary text-white px-6 py-2 rounded-lg flex-1">
+                    <i class="fas fa-save ml-1"></i> حفظ التغييرات
+                </button>
+                <button onclick="publishSurvey()" id="publishBtn" class="btn-success text-white px-6 py-2 rounded-lg flex-1">
+                    <i class="fas fa-globe ml-1"></i> نشر الاستبيان
+                </button>
+                <button onclick="closeSurvey()" id="closeBtn" class="btn-warning text-white px-6 py-2 rounded-lg flex-1">
+                    <i class="fas fa-lock ml-1"></i> إغلاق الاستبيان
+                </button>
+                <button onclick="deleteSurvey()" class="btn-danger text-white px-6 py-2 rounded-lg">
+                    <i class="fas fa-trash ml-1"></i> حذف
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <script src="js/api.js"></script>
+    <script>
+        let surveyId = new URLSearchParams(location.search).get('id');
+        let surveyData = null;
+        let questionCounter = 0;
+        
+        // Show toast notification
+        function showToast(text, isSuccess) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            const bgColor = isSuccess ? '#10B981' : '#EF4444';
+            toast.innerHTML = `
+                <div class="flex items-center gap-3 bg-white rounded-xl shadow-lg p-3 border-r-4" style="border-right-color: ${bgColor}">
+                    <i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}" style="color: ${bgColor}"></i>
+                    <span class="text-gray-700 text-sm">${text}</span>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
+        
+        // Get status badge HTML
+        function getStatusBadge(status) {
+            if (status === 'published') {
+                return '<span class="badge-published"><i class="fas fa-globe-asia ml-1"></i> منشور</span>';
+            } else if (status === 'closed') {
+                return '<span class="badge-closed"><i class="fas fa-lock ml-1"></i> مغلق</span>';
+            } else {
+                return '<span class="badge-draft"><i class="fas fa-pen-fancy ml-1"></i> مسودة</span>';
+            }
+        }
+        
+        // Render a single question
+        function renderQuestion(question, index) {
+            return `
+                <div class="question-card p-5" data-id="${question.id || 'new_' + Date.now() + '_' + index}">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="font-semibold text-gray-800">سؤال ${index + 1}</h3>
+                        <button onclick="this.closest('.question-card').remove()" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-3">
+                        <input type="text" class="question-text input-field" placeholder="نص السؤال" value="${escapeHtml(question.question_text || '')}">
+                        <select class="question-type input-field" onchange="toggleOptions(this)">
+                            <option value="short_text" ${question.question_type === 'short_text' ? 'selected' : ''}>نص قصير</option>
+                            <option value="long_text" ${question.question_type === 'long_text' ? 'selected' : ''}>نص طويل</option>
+                            <option value="multiple_choice" ${question.question_type === 'multiple_choice' ? 'selected' : ''}>اختيار من متعدد</option>
+                            <option value="rating" ${question.question_type === 'rating' ? 'selected' : ''}>تقييم 1-5</option>
+                            <option value="date" ${question.question_type === 'date' ? 'selected' : ''}>تاريخ</option>
+                        </select>
+                        <div class="options-container" style="display: ${question.question_type === 'multiple_choice' ? 'block' : 'none'}">
+                            <label class="text-sm text-gray-600">الخيارات</label>
+                            <div class="options-list space-y-2 mt-1">
+                                ${renderOptions(question.options || [])}
+                            </div>
+                            <button type="button" class="text-blue-600 text-sm mt-2" onclick="addOption(this)">+ إضافة خيار</button>
+                        </div>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" class="required-check" ${question.is_required ? 'checked' : ''}>
+                            <span class="text-sm text-gray-600">سؤال إجباري</span>
+                        </label>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderOptions(options) {
+            if (!options || options.length === 0) {
+                return `<div class="option-row"><input type="text" class="option-input input-field flex-1" placeholder="خيار 1"></div>`;
+            }
+            return options.map(opt => `
+                <div class="option-row">
+                    <input type="text" class="option-input input-field flex-1" value="${escapeHtml(opt.option_text || '')}">
+                    <button type="button" onclick="this.parentElement.remove()" class="text-red-500"><i class="fas fa-times"></i></button>
+                </div>
+            `).join('');
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        window.toggleOptions = function(select) {
+            const container = select.closest('.space-y-3').querySelector('.options-container');
+            if (container) {
+                container.style.display = select.value === 'multiple_choice' ? 'block' : 'none';
+            }
+        };
+        
+        window.addOption = function(btn) {
+            const container = btn.closest('.options-container').querySelector('.options-list');
+            const div = document.createElement('div');
+            div.className = 'option-row';
+            div.innerHTML = `
+                <input type="text" class="option-input input-field flex-1" placeholder="خيار جديد">
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-500"><i class="fas fa-times"></i></button>
+            `;
+            container.appendChild(div);
+        };
+        
+        function collectQuestions() {
+            const questions = [];
+            document.querySelectorAll('.question-card').forEach((card, idx) => {
+                const questionText = card.querySelector('.question-text').value;
+                const questionType = card.querySelector('.question-type').value;
+                const isRequired = card.querySelector('.required-check').checked;
+                let options = [];
+                
+                if (questionType === 'multiple_choice') {
+                    const optionInputs = card.querySelectorAll('.option-input');
+                    options = Array.from(optionInputs).map((input, i) => ({
+                        option_text: input.value,
+                        option_value: input.value,
+                        order_number: i + 1
+                    })).filter(opt => opt.option_text.trim());
+                }
+                
+                if (questionText.trim()) {
+                    questions.push({
+                        question_text: questionText,
+                        question_type: questionType,
+                        is_required: isRequired,
+                        order_number: idx + 1,
+                        options: options
+                    });
+                }
+            });
+            return questions;
+        }
+        
+        function addQuestion(question = null) {
+            const container = document.getElementById('questionsContainer');
+            const index = container.children.length;
+            const defaultQuestion = question || {
+                question_text: '',
+                question_type: 'short_text',
+                is_required: false,
+                options: []
+            };
+            const div = document.createElement('div');
+            div.innerHTML = renderQuestion(defaultQuestion, index);
+            container.appendChild(div.firstElementChild);
+        }
+        
+        // Load survey data
+        async function loadSurvey() {
+            if (!surveyId) {
+                showToast('معرف الاستبيان غير موجود', false);
+                setTimeout(() => location.href = 'admin-surveys.html', 1500);
+                return;
+            }
+            
+            try {
+                const survey = await api('/surveys/' + surveyId);
+                surveyData = survey;
+                
+                document.getElementById('title').value = survey.title || '';
+                document.getElementById('description').value = survey.description || '';
+                document.getElementById('isPublic').checked = survey.is_public !== false;
+                document.getElementById('statusBadge').innerHTML = getStatusBadge(survey.status);
+                
+                const container = document.getElementById('questionsContainer');
+                container.innerHTML = '';
+                const questions = survey.questions || [];
+                questions.sort((a, b) => a.order_number - b.order_number);
+                questions.forEach((q, i) => {
+                    const div = document.createElement('div');
+                    div.innerHTML = renderQuestion(q, i);
+                    container.appendChild(div.firstElementChild);
+                });
+                
+                const currentUser = user();
+                if (currentUser) {
+                    document.getElementById('adminName').textContent = currentUser.name || 'Admin';
+                }
+            } catch (error) {
+                showToast('خطأ في تحميل الاستبيان: ' + error.message, false);
+                setTimeout(() => location.href = 'admin-surveys.html', 2000);
+            }
+        }
+        
+        // Save survey
+        async function saveSurvey() {
+            const title = document.getElementById('title').value.trim();
+            if (!title) {
+                showToast('الرجاء إدخال عنوان الاستبيان', false);
+                return;
+            }
+            
+            const questions = collectQuestions();
+            if (questions.length === 0) {
+                showToast('الرجاء إضافة سؤال واحد على الأقل', false);
+                return;
+            }
+            
+            const payload = {
+                title: title,
+                description: document.getElementById('description').value,
+                is_public: document.getElementById('isPublic').checked,
+                questions: questions
+            };
+            
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerHTML = '<div class="loading mx-auto"></div>';
+            saveBtn.disabled = true;
+            
+            try {
+                await api('/surveys/' + surveyId, { method: 'PUT', body: JSON.stringify(payload) });
+                showToast('✓ تم حفظ التغييرات بنجاح', true);
+                loadSurvey();
+            } catch (error) {
+                showToast('✗ فشل الحفظ: ' + error.message, false);
+            } finally {
+                saveBtn.innerHTML = '<i class="fas fa-save ml-1"></i> حفظ التغييرات';
+                saveBtn.disabled = false;
+            }
+        }
+        
+        // Publish survey
+        async function publishSurvey() {
+            try {
+                await api('/surveys/' + surveyId + '/publish', { method: 'POST' });
+                showToast('✓ تم نشر الاستبيان بنجاح', true);
+                loadSurvey();
+            } catch (error) {
+                showToast('✗ فشل النشر: ' + error.message, false);
+            }
+        }
+        
+        // Close survey
+        async function closeSurvey() {
+            try {
+                await api('/surveys/' + surveyId + '/close', { method: 'POST' });
+                showToast('✓ تم إغلاق الاستبيان', true);
+                loadSurvey();
+            } catch (error) {
+                showToast('✗ فشل الإغلاق: ' + error.message, false);
+            }
+        }
+        
+        // Delete survey
+        async function deleteSurvey() {
+            if (confirm('⚠️ هل أنت متأكد من حذف هذا الاستبيان؟ لا يمكن التراجع عن هذا الإجراء.')) {
+                try {
+                    await api('/surveys/' + surveyId, { method: 'DELETE' });
+                    showToast('✓ تم حذف الاستبيان بنجاح', true);
+                    setTimeout(() => location.href = 'admin-surveys.html', 1500);
+                } catch (error) {
+                    showToast('✗ فشل الحذف: ' + error.message, false);
+                }
+            }
+        }
+        
+        // Make addQuestion available globally
+        window.addQuestion = addQuestion;
+        
+        // Initial load
+        requireRole('admin', 'researcher');
+        loadSurvey();
+    </script>
+</body>
+</html>

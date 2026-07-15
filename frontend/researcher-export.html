@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, viewport-fit=cover">
+    <title>تصدير البيانات | PURE Survey 2026</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #C4E2F5 0%, #E8F4FD 100%);
+            min-height: 100vh;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(75, 184, 250, 0.06);
+            animation: floatBg 25s infinite;
+        }
+        
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(50px, -50px) scale(1.2); opacity: 0.5; }
+            50% { transform: translate(-40px, 40px) scale(0.85); opacity: 0.4; }
+            75% { transform: translate(40px, 50px) scale(1.1); opacity: 0.45; }
+        }
+        
+        .header {
+            background: rgba(44, 94, 173, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .export-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1.25rem;
+            border: 1px solid rgba(196, 226, 245, 0.5);
+            transition: all 0.3s;
+        }
+        
+        .export-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -12px rgba(44, 94, 173, 0.2);
+        }
+        
+        .option-card {
+            background: white;
+            border-radius: 1rem;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -10px rgba(44,94,173,0.2);
+            border-color: #C4E2F5;
+        }
+        
+        .option-card.selected {
+            border-color: #1591DC;
+            background: linear-gradient(135deg, #F8FAFE, #FFFFFF);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(44, 94, 173, 0.5);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #059669, #047857);
+            transition: all 0.3s;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(5, 150, 105, 0.5);
+        }
+        
+        .btn-outline {
+            border: 1.5px solid #1591DC;
+            color: #1591DC;
+            background: white;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            color: white;
+        }
+        
+        .survey-item {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 12px;
+            border: 1px solid #E2E8F0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .survey-item:hover {
+            background: #F8FAFE;
+            border-color: #C4E2F5;
+        }
+        
+        .survey-item.selected {
+            background: linear-gradient(135deg, #F8FAFE, #FFFFFF);
+            border-color: #1591DC;
+            border-width: 2px;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 90px;
+            left: 20px;
+            z-index: 1100;
+            animation: slideRight 0.3s ease-out;
+        }
+        
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #C4E2F5;
+            border-top-color: #2C5EAD;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #C4E2F5; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #2C5EAD, #1591DC); border-radius: 10px; }
+        
+        .search-input {
+            transition: all 0.3s;
+            border: 1px solid #E2E8F0;
+        }
+        
+        .search-input:focus {
+            border-color: #4BB8FA;
+            box-shadow: 0 0 0 3px rgba(75, 184, 250, 0.15);
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation" id="bgAnimation"></div>
+    
+    <header class="header text-white">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight">PURE Survey</h1>
+                        <p class="text-xs text-white/70">تصدير البيانات</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                        <i class="fas fa-microscope text-sm"></i>
+                        <span class="text-sm" id="researcherName">Researcher</span>
+                    </div>
+                    <button onclick="location.href='researcher.html'" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg text-sm transition">
+                        <i class="fas fa-arrow-right ml-1"></i> لوحة التحكم
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="relative z-10 container mx-auto px-6 py-8">
+        <div class="max-w-5xl mx-auto">
+            <!-- Title -->
+            <div class="text-center mb-8 fade-in-up">
+                <h2 class="text-2xl font-bold text-gray-800">📊 تصدير بيانات الاستبيانات</h2>
+                <p class="text-gray-500 mt-2">قم بتصدير بيانات استبياناتك بتنسيقات متعددة</p>
+            </div>
+            
+            <!-- Quick Export Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 fade-in-up">
+                <!-- All My Surveys Export -->
+                <div class="export-card p-6 text-center cursor-pointer" onclick="exportAllMySurveys()">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-database text-[#2C5EAD] text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-lg">جميع استبياناتي</h3>
+                    <p class="text-sm text-gray-500 mt-1">تصدير جميع استبياناتك وردودها</p>
+                    <button class="btn-primary text-white px-4 py-2 rounded-lg text-sm mt-3 w-full">
+                        <i class="fas fa-file-excel ml-1"></i> تصدير Excel
+                    </button>
+                </div>
+                
+                <!-- Analytics Export -->
+                <div class="export-card p-6 text-center cursor-pointer" onclick="exportAnalytics()">
+                    <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-chart-line text-[#4BB8FA] text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-lg">تقارير تحليلية</h3>
+                    <p class="text-sm text-gray-500 mt-1">تصدير تقارير تحليلية متقدمة</p>
+                    <button class="btn-primary text-white px-4 py-2 rounded-lg text-sm mt-3 w-full">
+                        <i class="fas fa-chart-pie ml-1"></i> تصدير PDF
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Survey Selection -->
+            <div class="export-card p-6 mb-8 fade-in-up" style="animation-delay: 0.1s">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-poll text-[#2C5EAD]"></i>
+                    تصدير استبيان محدد
+                </h3>
+                
+                <div class="mb-4">
+                    <div class="relative">
+                        <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input type="text" id="surveySearch" placeholder="بحث عن استبيان..." class="search-input pr-8 pl-3 py-2 border border-gray-200 rounded-lg text-sm w-full">
+                    </div>
+                </div>
+                
+                <div id="surveysList" class="max-h-64 overflow-y-auto space-y-2 mb-4">
+                    <div class="text-center py-4">
+                        <div class="spinner mx-auto"></div>
+                        <p class="text-gray-500 text-sm mt-2">جاري تحميل الاستبيانات...</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button id="exportSelectedBtn" class="btn-success text-white px-6 py-2.5 rounded-xl flex-1 font-semibold" disabled>
+                        <i class="fas fa-file-excel ml-2"></i> تصدير الاستبيان المحدد
+                    </button>
+                    <button id="exportCSVBtn" class="btn-outline px-6 py-2.5 rounded-xl flex-1" disabled>
+                        <i class="fas fa-file-csv ml-2"></i> تصدير CSV
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Export Options -->
+            <div class="export-card p-6 fade-in-up" style="animation-delay: 0.2s">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-sliders-h text-[#2C5EAD]"></i>
+                    خيارات التصدير
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="option-card p-4 text-center" data-format="excel">
+                        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+                            <i class="fas fa-file-excel text-green-600 text-lg"></i>
+                        </div>
+                        <p class="font-semibold text-gray-800 text-sm">Excel</p>
+                        <p class="text-xs text-gray-500">ملف Excel</p>
+                    </div>
+                    <div class="option-card p-4 text-center" data-format="csv">
+                        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+                            <i class="fas fa-file-csv text-blue-600 text-lg"></i>
+                        </div>
+                        <p class="font-semibold text-gray-800 text-sm">CSV</p>
+                        <p class="text-xs text-gray-500">ملف نصي</p>
+                    </div>
+                    <div class="option-card p-4 text-center" data-format="pdf">
+                        <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+                            <i class="fas fa-file-pdf text-red-600 text-lg"></i>
+                        </div>
+                        <p class="font-semibold text-gray-800 text-sm">PDF</p>
+                        <p class="text-xs text-gray-500">ملف PDF</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-info-circle text-[#1591DC] text-sm"></i>
+                        <p class="text-xs text-gray-600">اختر الاستبيان ثم التنسيق المطلوب للتصدير</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="js/api.js"></script>
+    <script>
+        let allSurveys = [];
+        let selectedSurveyId = null;
+        let selectedFormat = 'excel';
+        
+        function createBackgroundCircles() {
+            const container = document.getElementById('bgAnimation');
+            for (let i = 0; i < 20; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('bg-circle');
+                const size = Math.random() * 200 + 80;
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.left = Math.random() * 100 + '%';
+                circle.style.top = Math.random() * 100 + '%';
+                circle.style.animationDelay = Math.random() * 25 + 's';
+                circle.style.animationDuration = Math.random() * 20 + 15 + 's';
+                container.appendChild(circle);
+            }
+        }
+        createBackgroundCircles();
+        
+        function showToast(text, isSuccess) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            const bgColor = isSuccess ? '#10B981' : '#EF4444';
+            toast.innerHTML = `<div class="flex items-center gap-3 bg-white rounded-xl shadow-lg p-3 border-r-4" style="border-right-color: ${bgColor}"><i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span class="text-gray-700 text-sm">${text}</span></div>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+        }
+        
+        async function loadSurveys() {
+            try {
+                const surveys = await api('/surveys/my');
+                allSurveys = surveys;
+                renderSurveysList(surveys);
+                
+                const currentUser = user();
+                if (currentUser) document.getElementById('researcherName').textContent = currentUser.name || 'Researcher';
+            } catch (error) {
+                document.getElementById('surveysList').innerHTML = '<div class="text-center py-4 text-red-500">فشل في تحميل الاستبيانات</div>';
+            }
+        }
+        
+        function renderSurveysList(surveys) {
+            const container = document.getElementById('surveysList');
+            if (!surveys || surveys.length === 0) {
+                container.innerHTML = '<div class="text-center py-4 text-gray-500">لا توجد استبيانات</div>';
+                return;
+            }
+            container.innerHTML = surveys.map(survey => `
+                <div class="survey-item ${selectedSurveyId === survey.id ? 'selected' : ''}" onclick="selectSurvey(${survey.id})">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-semibold text-gray-800">${escapeHtml(survey.title || 'بدون عنوان')}</p>
+                            <p class="text-xs text-gray-500">${survey.responses?.length || 0} ردود</p>
+                        </div>
+                        <i class="fas fa-chevron-left text-gray-400"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function selectSurvey(id) {
+            selectedSurveyId = id;
+            renderSurveysList(allSurveys);
+            const exportBtn = document.getElementById('exportSelectedBtn');
+            const csvBtn = document.getElementById('exportCSVBtn');
+            exportBtn.disabled = false;
+            csvBtn.disabled = false;
+            showToast(`تم اختيار الاستبيان: ${allSurveys.find(s => s.id === id)?.title}`, true);
+        }
+        
+        // Format selection
+        document.querySelectorAll('.option-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedFormat = card.dataset.format;
+            });
+        });
+        document.querySelector('.option-card').classList.add('selected');
+        
+        document.getElementById('surveySearch').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allSurveys.filter(s => (s.title || '').toLowerCase().includes(term));
+            renderSurveysList(filtered);
+        });
+        
+        async function exportAllMySurveys() {
+            showToast('جاري تصدير جميع الاستبيانات...', true);
+            try {
+                const response = await fetch(API_BASE + '/export/all-my-surveys', {
+                    headers: { 'Authorization': 'Bearer ' + token() }
+                });
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `my-surveys-${new Date().toISOString().slice(0,19)}.xlsx`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('✓ تم تصدير جميع الاستبيانات بنجاح', true);
+            } catch (error) {
+                showToast('✗ فشل التصدير: ' + error.message, false);
+            }
+        }
+        
+        async function exportAnalytics() {
+            showToast('جاري تصدير التقارير التحليلية...', true);
+            try {
+                const response = await fetch(API_BASE + '/export/analytics/my', {
+                    headers: { 'Authorization': 'Bearer ' + token() }
+                });
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `analytics-${new Date().toISOString().slice(0,19)}.pdf`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('✓ تم تصدير التقارير بنجاح', true);
+            } catch (error) {
+                showToast('✗ فشل التصدير: ' + error.message, false);
+            }
+        }
+        
+        async function exportSelectedSurvey() {
+            if (!selectedSurveyId) {
+                showToast('الرجاء اختيار استبيان أولاً', false);
+                return;
+            }
+            
+            const survey = allSurveys.find(s => s.id === selectedSurveyId);
+            showToast(`جاري تصدير "${survey?.title}"...`, true);
+            
+            try {
+                let url = API_BASE + `/export/survey/${selectedSurveyId}`;
+                if (selectedFormat !== 'excel') {
+                    url += `/${selectedFormat}`;
+                }
+                const response = await fetch(url, {
+                    headers: { 'Authorization': 'Bearer ' + token() }
+                });
+                const blob = await response.blob();
+                const urlBlob = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = urlBlob;
+                let extension = 'xlsx';
+                if (selectedFormat === 'csv') extension = 'csv';
+                if (selectedFormat === 'pdf') extension = 'pdf';
+                a.download = `survey-${selectedSurveyId}-${new Date().toISOString().slice(0,19)}.${extension}`;
+                a.click();
+                URL.revokeObjectURL(urlBlob);
+                showToast('✓ تم تصدير الاستبيان بنجاح', true);
+            } catch (error) {
+                showToast('✗ فشل التصدير: ' + error.message, false);
+            }
+        }
+        
+        document.getElementById('exportSelectedBtn').addEventListener('click', exportSelectedSurvey);
+        
+        requireRole('researcher');
+        loadSurveys();
+    </script>
+</body>
+</html>

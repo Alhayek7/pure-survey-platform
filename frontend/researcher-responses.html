@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, viewport-fit=cover">
+    <title>ردود الاستبيان | PURE Survey 2026</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #C4E2F5 0%, #E8F4FD 100%);
+            min-height: 100vh;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(75, 184, 250, 0.06);
+            animation: floatBg 25s infinite;
+        }
+        
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(50px, -50px) scale(1.2); opacity: 0.5; }
+            50% { transform: translate(-40px, 40px) scale(0.85); opacity: 0.4; }
+            75% { transform: translate(40px, 50px) scale(1.1); opacity: 0.45; }
+        }
+        
+        .header {
+            background: rgba(44, 94, 173, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            border: 1px solid rgba(196, 226, 245, 0.5);
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -12px rgba(44, 94, 173, 0.2);
+        }
+        
+        .response-card {
+            background: white;
+            border-radius: 1rem;
+            transition: all 0.3s;
+            border: 1px solid #E2E8F0;
+        }
+        
+        .response-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -10px rgba(44, 94, 173, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(44, 94, 173, 0.5);
+        }
+        
+        .btn-outline {
+            border: 1.5px solid #1591DC;
+            color: #1591DC;
+            background: white;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            color: white;
+        }
+        
+        .btn-export {
+            background: linear-gradient(135deg, #059669, #047857);
+            transition: all 0.3s;
+        }
+        
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(5, 150, 105, 0.5);
+        }
+        
+        .badge-published {
+            background: #C4E2F5;
+            color: #2C5EAD;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .sentiment-positive {
+            background: #C4E2F5;
+            color: #2C5EAD;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+        }
+        
+        .sentiment-negative {
+            background: #FEE2E2;
+            color: #DC2626;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+        }
+        
+        .sentiment-neutral {
+            background: #FEF3C7;
+            color: #D97706;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active { display: flex; }
+        
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            max-width: 550px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalSlide 0.3s ease-out;
+        }
+        
+        @keyframes modalSlide {
+            from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        .toast {
+            position: fixed;
+            top: 90px;
+            left: 20px;
+            z-index: 1100;
+            animation: slideRight 0.3s ease-out;
+        }
+        
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #C4E2F5;
+            border-top-color: #2C5EAD;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #C4E2F5; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #2C5EAD, #1591DC); border-radius: 10px; }
+        
+        .answer-item {
+            background: #F8FAFE;
+            border-radius: 0.75rem;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+        }
+        
+        .search-input {
+            transition: all 0.3s;
+            border: 1px solid #E2E8F0;
+        }
+        
+        .search-input:focus {
+            border-color: #4BB8FA;
+            box-shadow: 0 0 0 3px rgba(75, 184, 250, 0.15);
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation" id="bgAnimation"></div>
+    
+    <header class="header text-white">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight">PURE Survey</h1>
+                        <p class="text-xs text-white/70">ردود الاستبيان</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                        <i class="fas fa-microscope text-sm"></i>
+                        <span class="text-sm" id="researcherName">Researcher</span>
+                    </div>
+                    <button onclick="location.href='researcher-surveys.html'" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg text-sm transition">
+                        <i class="fas fa-arrow-right ml-1"></i> استبياناتي
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="relative z-10 container mx-auto px-6 py-8">
+        <div class="max-w-6xl mx-auto">
+            <!-- Survey Info -->
+            <div id="surveyInfo" class="bg-white rounded-xl p-5 shadow-sm mb-6 fade-in-up">
+                <div class="flex justify-between items-center flex-wrap gap-3">
+                    <div>
+                        <h2 id="surveyTitle" class="text-xl font-bold text-gray-800">تحميل...</h2>
+                        <p id="surveyDesc" class="text-gray-500 text-sm mt-1"></p>
+                        <div class="flex gap-3 mt-2">
+                            <span id="surveyStatus" class="badge-published text-xs">-</span>
+                            <span id="responseCount" class="text-xs text-gray-400">0 ردود</span>
+                        </div>
+                    </div>
+                    <button onclick="exportResponses()" class="btn-export text-white px-5 py-2 rounded-lg text-sm">
+                        <i class="fas fa-file-excel ml-1"></i> تصدير Excel
+                    </button>
+                </div>
+            </div>
+            
+            <!-- AI Sentiment Analysis Card -->
+            <div id="sentimentCard" class="hidden bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-5 mb-6 fade-in-up border border-purple-100"></div>
+            
+            <!-- Stats Cards -->
+            <div id="statsContainer" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 hidden fade-in-up"></div>
+            
+            <!-- Search -->
+            <div class="bg-white/90 rounded-xl p-3 mb-6 fade-in-up">
+                <div class="relative">
+                    <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="searchInput" placeholder="بحث في الردود..." class="search-input pr-8 pl-3 py-2 border border-gray-200 rounded-lg text-sm w-full">
+                </div>
+            </div>
+            
+            <!-- Responses Container -->
+            <div id="responsesContainer" class="space-y-3 fade-in-up"></div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="bg-white rounded-xl p-12 text-center hidden fade-in-up">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-inbox text-gray-400 text-3xl"></i>
+                </div>
+                <p class="text-gray-500">لا توجد ردود على هذا الاستبيان بعد</p>
+            </div>
+            
+            <!-- Loading -->
+            <div id="loadingState" class="text-center py-12 hidden">
+                <div class="spinner mx-auto"></div>
+                <p class="text-gray-500 mt-3">جاري تحميل الردود...</p>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Response Detail Modal -->
+    <div id="responseModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">📄 تفاصيل الرد</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div id="modalContent"></div>
+            <div class="mt-4 flex justify-end">
+                <button onclick="closeModal()" class="btn-outline px-4 py-2 rounded-lg">إغلاق</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script>
+        const surveyId = new URLSearchParams(location.search).get('id');
+        let surveyData = null;
+        let allResponses = [];
+        let sentimentChart = null;
+        
+        function createBackgroundCircles() {
+            const container = document.getElementById('bgAnimation');
+            for (let i = 0; i < 20; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('bg-circle');
+                const size = Math.random() * 200 + 80;
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.left = Math.random() * 100 + '%';
+                circle.style.top = Math.random() * 100 + '%';
+                circle.style.animationDelay = Math.random() * 25 + 's';
+                circle.style.animationDuration = Math.random() * 20 + 15 + 's';
+                container.appendChild(circle);
+            }
+        }
+        createBackgroundCircles();
+        
+        function showToast(text, isSuccess) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            const bgColor = isSuccess ? '#10B981' : '#EF4444';
+            toast.innerHTML = `<div class="flex items-center gap-3 bg-white rounded-xl shadow-lg p-3 border-r-4" style="border-right-color: ${bgColor}"><i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span class="text-gray-700 text-sm">${text}</span></div>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('ar-EG');
+        }
+        
+        function getSentimentBadge(score) {
+            if (score > 0.2) return '<span class="sentiment-positive"><i class="fas fa-smile-wink ml-1"></i> إيجابي</span>';
+            if (score < -0.2) return '<span class="sentiment-negative"><i class="fas fa-frown ml-1"></i> سلبي</span>';
+            return '<span class="sentiment-neutral"><i class="fas fa-meh ml-1"></i> محايد</span>';
+        }
+        
+        async function loadSurveyAndResponses() {
+            if (!surveyId) {
+                showToast('معرف الاستبيان غير موجود', false);
+                setTimeout(() => location.href = 'researcher-surveys.html', 1500);
+                return;
+            }
+            
+            document.getElementById('loadingState').classList.remove('hidden');
+            
+            try {
+                surveyData = await api('/surveys/' + surveyId);
+                document.getElementById('surveyTitle').textContent = surveyData.title || 'بدون عنوان';
+                document.getElementById('surveyDesc').textContent = surveyData.description || 'لا يوجد وصف';
+                document.getElementById('surveyStatus').innerHTML = surveyData.status === 'published' ? 'منشور' : (surveyData.status === 'closed' ? 'مغلق' : 'مسودة');
+                
+                const responses = await api('/responses/survey/' + surveyId);
+                allResponses = responses;
+                document.getElementById('responseCount').innerHTML = responses.length + ' ردود';
+                
+                document.getElementById('loadingState').classList.add('hidden');
+                
+                if (responses.length === 0) {
+                    document.getElementById('emptyState').classList.remove('hidden');
+                    return;
+                }
+                document.getElementById('emptyState').classList.add('hidden');
+                
+                // Update stats
+                document.getElementById('statsContainer').classList.remove('hidden');
+                const total = responses.length;
+                let totalAnswers = 0;
+                responses.forEach(r => totalAnswers += r.answers?.length || 0);
+                const today = new Date().toLocaleDateString('ar-EG');
+                
+                document.getElementById('statsContainer').innerHTML = `
+                    <div class="stat-card p-3 text-center"><div class="text-2xl font-bold text-[#2C5EAD]">${total}</div><div class="text-xs text-gray-500">إجمالي الردود</div></div>
+                    <div class="stat-card p-3 text-center"><div class="text-2xl font-bold text-[#1591DC]">${totalAnswers}</div><div class="text-xs text-gray-500">إجمالي الإجابات</div></div>
+                    <div class="stat-card p-3 text-center"><div class="text-2xl font-bold text-[#4BB8FA]">${Math.round(totalAnswers / total)}</div><div class="text-xs text-gray-500">متوسط الإجابات</div></div>
+                    <div class="stat-card p-3 text-center"><div class="text-2xl font-bold text-green-600">${today}</div><div class="text-xs text-gray-500">آخر تحديث</div></div>
+                `;
+                
+                // Analyze sentiments
+                await analyzeSentiments(responses);
+                
+                renderResponses(responses);
+                
+                const currentUser = user();
+                if (currentUser) document.getElementById('researcherName').textContent = currentUser.name || 'Researcher';
+            } catch (error) {
+                document.getElementById('loadingState').classList.add('hidden');
+                showToast('خطأ في تحميل البيانات', false);
+            }
+        }
+        
+        async function analyzeSentiments(responses) {
+            let positive = 0, negative = 0, neutral = 0;
+            const texts = [];
+            for (const response of responses) {
+                for (const answer of response.answers || []) {
+                    if (answer.answer_value && typeof answer.answer_value === 'string' && answer.answer_value.length > 5) {
+                        texts.push({ id: response.id, text: answer.answer_value.substring(0, 200) });
+                    }
+                }
+            }
+            
+            if (texts.length === 0) return;
+            
+            try {
+                const result = await api('/analytics/batch-sentiment', {
+                    method: 'POST',
+                    body: JSON.stringify({ responses: texts })
+                });
+                if (result.success && result.data) {
+                    const summary = result.data.summary;
+                    positive = summary.positive || 0;
+                    negative = summary.negative || 0;
+                    neutral = summary.neutral || 0;
+                    
+                    const total = positive + negative + neutral;
+                    const positivePercent = total > 0 ? (positive / total * 100).toFixed(1) : 0;
+                    const negativePercent = total > 0 ? (negative / total * 100).toFixed(1) : 0;
+                    const neutralPercent = total > 0 ? (neutral / total * 100).toFixed(1) : 0;
+                    
+                    const sentimentCard = document.getElementById('sentimentCard');
+                    sentimentCard.classList.remove('hidden');
+                    sentimentCard.innerHTML = `
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-robot text-purple-600 text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-gray-800 mb-2">🤖 تحليل المشاعر بالذكاء الاصطناعي</h3>
+                                <div class="grid grid-cols-3 gap-2 mb-3">
+                                    <div class="text-center p-2 bg-green-50 rounded-lg"><div class="text-lg font-bold text-green-600">${positivePercent}%</div><div class="text-xs text-gray-600">😊 إيجابي</div></div>
+                                    <div class="text-center p-2 bg-yellow-50 rounded-lg"><div class="text-lg font-bold text-yellow-600">${neutralPercent}%</div><div class="text-xs text-gray-600">😐 محايد</div></div>
+                                    <div class="text-center p-2 bg-red-50 rounded-lg"><div class="text-lg font-bold text-red-600">${negativePercent}%</div><div class="text-xs text-gray-600">😞 سلبي</div></div>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: ${positivePercent}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch(e) { console.error('Sentiment error:', e); }
+        }
+        
+        function renderResponses(responses) {
+            const container = document.getElementById('responsesContainer');
+            container.innerHTML = responses.map((response, idx) => `
+                <div class="response-card p-4 fade-in-up" onclick="showResponseDetail(${response.id})">
+                    <div class="flex justify-between items-start flex-wrap gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-[#C4E2F5] to-[#E8F4FD] rounded-xl flex items-center justify-center">
+                                <span class="font-bold text-[#2C5EAD]">${idx + 1}</span>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">${escapeHtml(response.respondent_name || 'مجهول')}</p>
+                                <p class="text-xs text-gray-500">${formatDate(response.submitted_at)}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">${response.answers?.length || 0} إجابات</span>
+                            <button class="text-[#1591DC] text-sm"><i class="fas fa-chevron-left"></i></button>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-gray-100">
+                        <div class="flex flex-wrap gap-2 text-xs text-gray-500">
+                            ${(response.answers || []).slice(0, 2).map(a => `
+                                <span class="bg-gray-50 px-2 py-1 rounded">${escapeHtml((a.answer_value || '').substring(0, 50))}${(a.answer_value || '').length > 50 ? '...' : ''}</span>
+                            `).join('')}
+                            ${(response.answers || []).length > 2 ? `<span class="text-gray-400">+${response.answers.length - 2} إجابات</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function showResponseDetail(responseId) {
+            const response = allResponses.find(r => r.id === responseId);
+            if (!response) return;
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-gradient-to-r from-[#C4E2F5] to-[#E8F4FD] p-3 rounded-xl">
+                        <p class="text-sm text-[#2C5EAD] font-semibold">${escapeHtml(surveyData?.title || 'استبيان')}</p>
+                        <p class="text-xs text-gray-500 mt-1">تم الإرسال: ${formatDate(response.submitted_at)}</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <p class="text-sm text-gray-500">المجيب</p>
+                        <p class="font-semibold">${escapeHtml(response.respondent_name || 'مجهول')}</p>
+                        ${response.respondent_email ? `<p class="text-sm text-gray-600">${escapeHtml(response.respondent_email)}</p>` : ''}
+                    </div>
+                    <div class="border-t pt-3">
+                        <p class="font-semibold text-gray-800 mb-3">📝 الإجابات:</p>
+                        <div class="space-y-3 max-h-96 overflow-y-auto">
+                            ${(response.answers || []).map(answer => `
+                                <div class="answer-item">
+                                    <p class="text-xs text-gray-500 mb-1">${escapeHtml(answer.question?.question_text || 'سؤال')}</p>
+                                    <p class="text-sm text-gray-700">${escapeHtml(answer.answer_value || '-')}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('responseModal').classList.add('active');
+        }
+        
+        function closeModal() { document.getElementById('responseModal').classList.remove('active'); }
+        
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            if (!term) { renderResponses(allResponses); return; }
+            const filtered = allResponses.filter(r => 
+                (r.respondent_name && r.respondent_name.toLowerCase().includes(term)) ||
+                (r.answers && r.answers.some(a => (a.answer_value || '').toLowerCase().includes(term)))
+            );
+            renderResponses(filtered);
+        });
+        
+        async function exportResponses() {
+            showToast('جاري تصدير البيانات...', true);
+            try {
+                const response = await fetch(API_BASE + `/export/survey/${surveyId}`, {
+                    headers: { 'Authorization': 'Bearer ' + token() }
+                });
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `responses-${surveyId}-${new Date().toISOString().slice(0,19)}.xlsx`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('✓ تم تصدير البيانات بنجاح', true);
+            } catch (error) {
+                showToast('✗ فشل التصدير', false);
+            }
+        }
+        
+        requireRole('researcher');
+        loadSurveyAndResponses();
+    </script>
+</body>
+</html>

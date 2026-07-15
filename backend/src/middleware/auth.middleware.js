@@ -1,0 +1,5 @@
+﻿const jwt = require('jsonwebtoken');
+const { User } = require('../models');
+async function authenticate(req, res, next) { try { const header = req.headers.authorization || ''; const token = header.startsWith('Bearer ') ? header.slice(7) : null; if (!token) return res.status(401).json({ message: 'Authentication token required' }); const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret'); const user = await User.findByPk(payload.id); if (!user || !user.is_active) return res.status(401).json({ message: 'Invalid or inactive user' }); req.user = user; next(); } catch (_) { res.status(401).json({ message: 'Invalid or expired token' }); } }
+async function optionalAuth(req, _res, next) { const header = req.headers.authorization || ''; const token = header.startsWith('Bearer ') ? header.slice(7) : null; if (!token) return next(); try { const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret'); req.user = await User.findByPk(payload.id); } catch (_) {} next(); }
+module.exports = { authenticate, optionalAuth };

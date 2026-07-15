@@ -1,0 +1,1 @@
+﻿requireAuth(); document.addEventListener('DOMContentLoaded', async()=>{ const rows=await api('/responses/my'); document.querySelector('#responses').innerHTML=rows.map(r=>'<tr><td>'+r.id+'</td><td>'+(r.survey?.title||'')+'</td><td>'+new Date(r.submitted_at).toLocaleString()+'</td></tr>').join('') || '<tr><td colspan="3">No responses yet</td></tr>'; });

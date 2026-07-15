@@ -1,0 +1,2 @@
+﻿const router = require('express').Router(); const c = require('../../controllers/user.controller'); const { authenticate } = require('../../middleware/auth.middleware'); const { adminOnly } = require('../../middleware/role.middleware'); const { asyncHandler: ah } = require('../../utils/helpers');
+router.use(authenticate, adminOnly); router.get('/', ah(c.list)); router.get('/:id', ah(c.get)); router.put('/:id/role', ah(c.changeRole)); router.delete('/:id', ah(c.remove)); module.exports = router;

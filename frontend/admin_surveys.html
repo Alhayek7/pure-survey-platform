@@ -1,0 +1,691 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, viewport-fit=cover">
+    <title>إدارة الاستبيانات | PURE Survey 2026</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #C4E2F5 0%, #E8F4FD 100%);
+            min-height: 100vh;
+        }
+        
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(75, 184, 250, 0.06);
+            animation: floatBg 25s infinite;
+        }
+        
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(50px, -50px) scale(1.2); opacity: 0.5; }
+            50% { transform: translate(-40px, 40px) scale(0.85); opacity: 0.4; }
+            75% { transform: translate(40px, 50px) scale(1.1); opacity: 0.45; }
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(44, 94, 173, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        
+        /* Cards */
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1.25rem;
+            border: 1px solid rgba(196, 226, 245, 0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 35px -15px rgba(44, 94, 173, 0.25);
+            border-color: #4BB8FA;
+        }
+        
+        /* Survey Card (Grid View) */
+        .survey-card {
+            background: white;
+            border-radius: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #E2E8F0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .survey-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #2C5EAD, #4BB8FA);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s ease;
+        }
+        
+        .survey-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 35px -12px rgba(44, 94, 173, 0.2);
+            border-color: #C4E2F5;
+        }
+        
+        .survey-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        /* Badges */
+        .badge-published {
+            background: linear-gradient(135deg, #C4E2F5, #E8F4FD);
+            color: #2C5EAD;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        
+        .badge-draft {
+            background: linear-gradient(135deg, #FEF3C7, #FFFBEB);
+            color: #D97706;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        
+        .badge-closed {
+            background: linear-gradient(135deg, #FEE2E2, #FEF2F2);
+            color: #DC2626;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(44, 94, 173, 0.5);
+        }
+        
+        .btn-outline {
+            border: 1.5px solid #1591DC;
+            color: #1591DC;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline:hover {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            color: white;
+            border-color: transparent;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active { display: flex; }
+        
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            max-width: 450px;
+            width: 90%;
+            animation: modalSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes modalSlide {
+            from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 90px;
+            left: 20px;
+            z-index: 1100;
+            animation: slideRight 0.3s ease-out;
+        }
+        
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* Loading */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* View Toggle */
+        .view-toggle {
+            background: #F1F5F9;
+            border-radius: 12px;
+            padding: 3px;
+        }
+        
+        .view-toggle button {
+            padding: 6px 14px;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+        
+        .view-toggle button.active {
+            background: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #C4E2F5; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #2C5EAD, #1591DC); border-radius: 10px; }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+        
+        /* Search Input */
+        .search-input {
+            transition: all 0.3s;
+            border: 1px solid #E2E8F0;
+        }
+        
+        .search-input:focus {
+            border-color: #4BB8FA;
+            box-shadow: 0 0 0 3px rgba(75, 184, 250, 0.15);
+            outline: none;
+        }
+
+        /* Skeleton Loading */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 12px;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-title { height: 24px; width: 60%; margin-bottom: 12px; }
+.skeleton-text { height: 16px; margin: 8px 0; }
+.skeleton-button { height: 40px; width: 100px; border-radius: 10px; }
+
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation" id="bgAnimation"></div>
+    
+    <!-- Header -->
+    <header class="header text-white">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight">PURE Survey</h1>
+                        <p class="text-xs text-white/70">إدارة الاستبيانات</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                        <i class="fas fa-user-shield text-sm"></i>
+                        <span class="text-sm" id="adminName">Admin</span>
+                    </div>
+                    <button onclick="location.href='admin.html'" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-lg text-sm transition">
+                        <i class="fas fa-arrow-right ml-1"></i> لوحة التحكم
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="relative z-10 container mx-auto px-6 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 fade-in-up">
+            <div class="stat-card p-5 text-center">
+                <div class="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-poll text-[#2C5EAD] text-2xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="totalSurveys">0</p>
+                <p class="text-sm text-gray-500 mt-1">إجمالي الاستبيانات</p>
+                <span class="text-xs text-green-600 mt-2 inline-flex items-center gap-1"><i class="fas fa-arrow-up"></i> +12%</span>
+            </div>
+            <div class="stat-card p-5 text-center">
+                <div class="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-check-circle text-[#1591DC] text-2xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="publishedSurveys">0</p>
+                <p class="text-sm text-gray-500 mt-1">منشورة</p>
+                <span class="text-xs text-green-600 mt-2 inline-flex items-center gap-1"><i class="fas fa-arrow-up"></i> +8%</span>
+            </div>
+            <div class="stat-card p-5 text-center">
+                <div class="w-14 h-14 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-pen-fancy text-[#D97706] text-2xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="draftSurveys">0</p>
+                <p class="text-sm text-gray-500 mt-1">مسودات</p>
+                <span class="text-xs text-gray-500 mt-2 inline-flex items-center gap-1">قيد التحرير</span>
+            </div>
+            <div class="stat-card p-5 text-center">
+                <div class="w-14 h-14 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-chart-line text-[#4BB8FA] text-2xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="totalResponses">0</p>
+                <p class="text-sm text-gray-500 mt-1">إجمالي الردود</p>
+                <span class="text-xs text-green-600 mt-2 inline-flex items-center gap-1"><i class="fas fa-arrow-up"></i> +25%</span>
+            </div>
+        </div>
+        
+        <!-- Actions Bar -->
+        <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-4 mb-8 flex flex-wrap justify-between items-center gap-4 fade-in-up shadow-sm border border-white/50" style="animation-delay: 0.1s">
+            <div class="flex gap-3">
+                <button onclick="location.href='create-survey.html'" class="btn-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold">
+                    <i class="fas fa-plus ml-2"></i> استبيان جديد
+                </button>
+                <button onclick="refreshData()" class="btn-outline px-4 py-2.5 rounded-xl text-sm">
+                    <i class="fas fa-sync-alt ml-2"></i> تحديث
+                </button>
+            </div>
+            <div class="flex gap-3 items-center">
+                <div class="view-toggle flex">
+                    <button onclick="setView('grid')" id="gridViewBtn" class="active">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button onclick="setView('list')" id="listViewBtn">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+                <div class="relative">
+                    <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="searchInput" placeholder="بحث عن استبيان..." class="search-input pr-9 pl-4 py-2 border border-gray-200 rounded-xl text-sm w-64 bg-white/80 focus:bg-white transition">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Surveys Container (Grid View) -->
+        <div id="surveysContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-up" style="animation-delay: 0.2s">
+            <div class="col-span-full text-center py-12">
+                <div class="spinner mx-auto"></div>
+                <p class="text-gray-500 mt-3">جاري تحميل الاستبيانات...</p>
+            </div>
+        </div>
+        
+        <!-- Empty State (Hidden by default) -->
+        <div id="emptyState" class="text-center py-16 hidden fade-in-up">
+            <div class="w-28 h-28 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-inbox text-gray-400 text-5xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-700 mb-2">لا توجد استبيانات</h3>
+            <p class="text-gray-500 mb-6">ابدأ بإنشاء أول استبيان لك</p>
+            <button onclick="location.href='create-survey.html'" class="btn-primary text-white px-6 py-3 rounded-xl">
+                <i class="fas fa-plus ml-2"></i> إنشاء استبيان
+            </button>
+        </div>
+    </main>
+    
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-trash-alt text-red-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">تأكيد الحذف</h3>
+            <p class="text-gray-600 mb-6" id="deleteMessage">هل أنت متأكد من حذف هذا الاستبيان؟ لا يمكن التراجع عن هذا الإجراء.</p>
+            <div class="flex gap-3 justify-center">
+                <button onclick="closeModal()" class="px-5 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition">إلغاء</button>
+                <button id="confirmDeleteBtn" class="px-5 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition">حذف</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script>
+        let allSurveys = [];
+        let currentDeleteId = null;
+        let currentView = 'grid';
+        
+        // Background circles
+        function createBackgroundCircles() {
+            const container = document.getElementById('bgAnimation');
+            for (let i = 0; i < 25; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('bg-circle');
+                const size = Math.random() * 280 + 80;
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.left = Math.random() * 100 + '%';
+                circle.style.top = Math.random() * 100 + '%';
+                circle.style.animationDelay = Math.random() * 25 + 's';
+                circle.style.animationDuration = Math.random() * 22 + 12 + 's';
+                container.appendChild(circle);
+            }
+        }
+        createBackgroundCircles();
+        
+        function showToast(text, isSuccess) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            const bgColor = isSuccess ? '#10B981' : '#EF4444';
+            toast.innerHTML = `
+                <div class="flex items-center gap-3 bg-white rounded-xl shadow-lg p-3 border-r-4" style="border-right-color: ${bgColor}">
+                    <i class="fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    <span class="text-gray-700 text-sm">${text}</span>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function getStatusBadge(status) {
+            if (status === 'published') {
+                return '<span class="badge-published"><i class="fas fa-globe-asia ml-1 text-xs"></i> منشور</span>';
+            } else if (status === 'closed') {
+                return '<span class="badge-closed"><i class="fas fa-lock ml-1 text-xs"></i> مغلق</span>';
+            } else {
+                return '<span class="badge-draft"><i class="fas fa-pen-fancy ml-1 text-xs"></i> مسودة</span>';
+            }
+        }
+        
+        function renderGrid(surveys) {
+            if (!surveys || surveys.length === 0) {
+                document.getElementById('surveysContainer').innerHTML = '';
+                document.getElementById('emptyState').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('surveysContainer').innerHTML = surveys.map(survey => `
+                <div class="survey-card fade-in-up">
+                    <div class="p-5">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 bg-gradient-to-br from-[#C4E2F5] to-[#E8F4FD] rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-poll text-[#2C5EAD] text-lg"></i>
+                                </div>
+                                <span class="text-xs font-mono text-gray-400">#${survey.id}</span>
+                            </div>
+                            ${getStatusBadge(survey.status)}
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-1 line-clamp-1">${survey.title || 'بدون عنوان'}</h3>
+                        <p class="text-gray-500 text-sm mb-3 line-clamp-2">${survey.description || 'لا يوجد وصف'}</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-lg">
+                                    <i class="fas fa-chart-bar text-[#1591DC] text-xs"></i>
+                                    <span class="text-sm font-semibold text-gray-700">${survey.responses?.length || 0}</span>
+                                    <span class="text-xs text-gray-500">رد</span>
+                                </div>
+                                <div class="flex items-center gap-1 text-xs text-gray-400">
+                                    <i class="far fa-calendar-alt"></i>
+                                    <span>${new Date(survey.created_at).toLocaleDateString('ar-EG')}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 pt-3 border-t border-gray-100">
+                            <button onclick="editSurvey(${survey.id})" class="flex-1 btn-outline px-3 py-1.5 rounded-lg text-sm flex items-center justify-center gap-1">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                            <button onclick="viewResponses(${survey.id})" class="flex-1 bg-[#C4E2F5] text-[#2C5EAD] px-3 py-1.5 rounded-lg text-sm flex items-center justify-center gap-1 hover:bg-[#B8D4E8] transition">
+                                <i class="fas fa-chart-bar"></i> ردود
+                            </button>
+                            <button onclick="deleteSurvey(${survey.id})" class="text-red-500 hover:text-red-700 px-2">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderList(surveys) {
+            if (!surveys || surveys.length === 0) {
+                document.getElementById('surveysContainer').innerHTML = '';
+                document.getElementById('emptyState').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('surveysContainer').innerHTML = `
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-[#C4E2F5] to-[#E8F4FD]">
+                            <tr>
+                                <th class="p-3 text-right text-sm font-semibold text-[#2C5EAD]">ID</th>
+                                <th class="p-3 text-right text-sm font-semibold text-[#2C5EAD]">العنوان</th>
+                                <th class="p-3 text-right text-sm font-semibold text-[#2C5EAD]">الحالة</th>
+                                <th class="p-3 text-right text-sm font-semibold text-[#2C5EAD]">الردود</th>
+                                <th class="p-3 text-right text-sm font-semibold text-[#2C5EAD]">تاريخ الإنشاء</th>
+                                <th class="p-3 text-right text-sm font-semibold text-[#2C5EAD]">إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${surveys.map(survey => `
+                                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                    <td class="p-3 text-sm font-mono">${survey.id}</td>
+                                    <td class="p-3 text-sm font-medium">${survey.title || 'بدون عنوان'}</td>
+                                    <td class="p-3">${getStatusBadge(survey.status)}</td>
+                                    <td class="p-3 text-sm">${survey.responses?.length || 0}</td>
+                                    <td class="p-3 text-sm text-gray-500">${new Date(survey.created_at).toLocaleDateString('ar-EG')}</td>
+                                    <td class="p-3">
+                                        <div class="flex gap-2">
+                                            <button onclick="editSurvey(${survey.id})" class="text-[#1591DC] hover:text-[#2C5EAD]"><i class="fas fa-edit"></i></button>
+                                            <button onclick="viewResponses(${survey.id})" class="text-[#4BB8FA] hover:text-[#1591DC]"><i class="fas fa-chart-bar"></i></button>
+                                            <button onclick="deleteSurvey(${survey.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+        
+        function renderSurveys(surveys) {
+            if (currentView === 'grid') {
+                renderGrid(surveys);
+            } else {
+                renderList(surveys);
+            }
+        }
+        
+// ============================================
+// Load Surveys (معدلة)
+// ============================================
+async function loadSurveys() {
+    showSkeletonLoading();  // ✅ إضافة Skeleton Loading
+    
+    try {
+        const surveys = await api('/surveys');
+        allSurveys = surveys;
+        
+        const total = surveys.length;
+        const published = surveys.filter(s => s.status === 'published').length;
+        const drafts = surveys.filter(s => s.status === 'draft' || !s.status).length;
+        let responses = 0;
+        surveys.forEach(s => responses += s.responses?.length || 0);
+        
+        document.getElementById('totalSurveys').textContent = total;
+        document.getElementById('publishedSurveys').textContent = published;
+        document.getElementById('draftSurveys').textContent = drafts;
+        document.getElementById('totalResponses').textContent = responses;
+        
+        renderSurveys(surveys);
+        
+        const currentUser = user();
+        if (currentUser) document.getElementById('adminName').textContent = currentUser.name || 'Admin';
+    } catch (error) {
+        document.getElementById('surveysContainer').innerHTML = '<div class="col-span-full text-center py-12 text-red-500">حدث خطأ في تحميل البيانات</div>';
+    }
+}
+        
+        function setView(view) {
+            currentView = view;
+            const gridBtn = document.getElementById('gridViewBtn');
+            const listBtn = document.getElementById('listViewBtn');
+            if (view === 'grid') {
+                gridBtn.classList.add('active');
+                listBtn.classList.remove('active');
+            } else {
+                listBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+            }
+            renderSurveys(allSurveys);
+        }
+        
+// ============================================
+// Search Function (معدلة)
+// ============================================
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    
+    if (!term) {
+        renderSurveys(allSurveys);
+        return;
+    }
+    
+    const filtered = allSurveys.filter(s => 
+        (s.title && s.title.toLowerCase().includes(term)) ||
+        (s.description && s.description.toLowerCase().includes(term))
+    );
+    
+    // ✅ عرض رسالة إذا لم توجد نتائج
+    if (filtered.length === 0) {
+        document.getElementById('surveysContainer').innerHTML = `
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-search text-4xl text-gray-300 mb-2"></i>
+                <p class="text-gray-500">لا توجد نتائج مطابقة للبحث</p>
+            </div>
+        `;
+        return;
+    }
+    
+    renderSurveys(filtered);
+});
+        
+        function editSurvey(id) { window.location.href = `edit-survey.html?id=${id}`; }
+        function viewResponses(id) { window.location.href = `responses.html?id=${id}`; }
+        
+        function deleteSurvey(id) {
+            const survey = allSurveys.find(s => s.id === id);
+            currentDeleteId = id;
+            document.getElementById('deleteMessage').innerHTML = `هل أنت متأكد من حذف "${survey?.title || 'هذا الاستبيان'}"؟ لا يمكن التراجع عن هذا الإجراء.`;
+            document.getElementById('deleteModal').classList.add('active');
+            document.getElementById('confirmDeleteBtn').onclick = async () => {
+                try {
+                    await api('/surveys/' + id, { method: 'DELETE' });
+                    showToast('✓ تم حذف الاستبيان بنجاح', true);
+                    closeModal();
+                    loadSurveys();
+                } catch (error) {
+                    showToast('✗ فشل الحذف: ' + error.message, false);
+                }
+            };
+        }
+        
+        function refreshData() { showToast('جاري تحديث البيانات...', true); loadSurveys(); }
+        function closeModal() { document.getElementById('deleteModal').classList.remove('active'); }
+        
+        // ============================================
+        // التحقق من الصلاحيات مع البقاء في الصفحة
+        // ============================================
+        const currentUser = user();
+        
+        if (!currentUser) {
+            // لا يوجد مستخدم مسجل، نعرض رسالة ونبقى في الصفحة
+            console.log('الرجاء تسجيل الدخول للوصول إلى هذه الصفحة');
+            showToast('الرجاء تسجيل الدخول للوصول إلى لوحة التحكم', false);
+            // لا نعيد التوجيه فوراً، ننتظر 3 ثوانٍ
+            setTimeout(() => {
+                sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
+                window.location.href = 'index.html';
+            }, 3000);
+        } else if (currentUser.role !== 'admin') {
+            // مستخدم مسجل ولكن ليس Admin
+            console.log('ليس لديك صلاحية الوصول إلى هذه الصفحة');
+            showToast('ليس لديك صلاحية الوصول إلى هذه الصفحة', false);
+            setTimeout(() => {
+                if (currentUser.role === 'researcher') {
+                    window.location.href = 'researcher.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+            }, 2000);
+        } else {
+            // المستخدم Admin، نستمر في تحميل الصفحة
+            loadSurveys();
+        }
+        
+        // إذا كان المستخدم Admin، لا حاجة لإعادة التوجيه
+        if (currentUser?.role === 'admin') {
+            // نستمر في تحميل الصفحة (تم استدعاؤه أعلاه)
+        }
+
+
+
+    </script>
+</body>
+</html>

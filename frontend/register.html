@@ -1,0 +1,422 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, viewport-fit=cover">
+    <title>إنشاء حساب | PURE Survey</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6Lei3R4tAAAAAMcJ9OMpyoXpoPDpLWRRQ3tgU2YB"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        html, body { height: 100vh; width: 100vw; overflow: hidden; position: fixed; }
+        
+        body {
+            background: linear-gradient(135deg, #2C5EAD 0%, #1591DC 50%, #4BB8FA 100%);
+            position: relative;
+        }
+        
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(196, 226, 245, 0.12);
+            pointer-events: none;
+            animation: floatBg 20s infinite;
+            backdrop-filter: blur(3px);
+        }
+        
+        @keyframes floatBg {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(30px, -30px) scale(1.1); opacity: 0.5; }
+            50% { transform: translate(-20px, 20px) scale(0.9); opacity: 0.4; }
+            75% { transform: translate(20px, 30px) scale(1.05); opacity: 0.45; }
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+            border: 2px solid #E2E8F0;
+            background: white;
+        }
+        
+        .input-field:focus {
+            border-color: #4BB8FA;
+            box-shadow: 0 0 0 4px rgba(75, 184, 250, 0.15);
+            outline: none;
+            transform: scale(1.01);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2C5EAD, #1591DC);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(44, 94, 173, 0.5);
+        }
+        
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 2px solid white;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.6s linear infinite;
+            display: inline-block;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .year-badge {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 20;
+        }
+        
+        /* reCAPTCHA badge adjustment */
+        .grecaptcha-badge {
+            bottom: 70px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background circles -->
+    <div id="bgCircles"></div>
+    
+    <!-- Year badge -->
+    <div class="year-badge">
+        <i class="fas fa-chart-line ml-1"></i> PURE Survey Platform 2026
+    </div>
+    
+    <div class="relative z-10 h-screen w-screen flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-8">
+            <!-- Logo Section -->
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-3 shadow-lg" style="background: linear-gradient(135deg, #2C5EAD, #1591DC);">
+                    <i class="fas fa-user-plus text-white text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold" style="color: #2C5EAD;">إنشاء حساب جديد</h1>
+                <p class="text-sm mt-1" style="color: #1591DC;">انضم إلى منصة PURE Survey</p>
+            </div>
+            
+            <!-- Message Container -->
+            <div id="messageContainer" class="mb-4 min-h-[56px]"></div>
+            
+            <!-- Registration Form -->
+            <form id="registerForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-2" style="color: #2C5EAD;">
+                        <i class="fas fa-user ml-1" style="color: #4BB8FA;"></i>
+                        الاسم الكامل
+                    </label>
+                    <div class="relative group">
+                        <i class="fas fa-user absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm transition-colors group-focus-within:text-[#1591DC]"></i>
+                        <input type="text" id="name" name="name" class="input-field w-full pr-9 pl-3 py-2.5 rounded-xl text-sm" placeholder="أدخل اسمك الكامل" autocomplete="name" required>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold mb-2" style="color: #2C5EAD;">
+                        <i class="fas fa-envelope ml-1" style="color: #4BB8FA;"></i>
+                        البريد الإلكتروني
+                    </label>
+                    <div class="relative group">
+                        <i class="fas fa-envelope absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input type="email" id="email" name="email" class="input-field w-full pr-9 pl-3 py-2.5 rounded-xl text-sm" placeholder="example@domain.com" autocomplete="email" required>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">سنرسل رمز التفعيل إلى هذا البريد</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold mb-2" style="color: #2C5EAD;">
+                        <i class="fas fa-lock ml-1" style="color: #4BB8FA;"></i>
+                        كلمة المرور
+                    </label>
+                    <div class="relative group">
+                        <i class="fas fa-key absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input type="password" id="password" name="password" class="input-field w-full pr-9 pl-3 py-2.5 rounded-xl text-sm" placeholder="••••••••" autocomplete="new-password" required>
+                    </div>
+                    <div class="password-strength" id="passwordStrength"></div>
+                    <p class="text-xs text-gray-400 mt-1">كلمة المرور يجب أن تكون 6 أحرف على الأقل</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold mb-2" style="color: #2C5EAD;">
+                        <i class="fas fa-check-circle ml-1" style="color: #4BB8FA;"></i>
+                        تأكيد كلمة المرور
+                    </label>
+                    <div class="relative group">
+                        <i class="fas fa-check absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input type="password" id="confirmPassword" class="input-field w-full pr-9 pl-3 py-2.5 rounded-xl text-sm" placeholder="••••••••" autocomplete="new-password" required>
+                    </div>
+                </div>
+                
+                <!-- Terms and Conditions -->
+                <div class="flex items-start gap-2">
+                    <input type="checkbox" id="termsCheckbox" class="mt-1 w-4 h-4 rounded" style="accent-color: #1591DC;" required>
+                    <label for="termsCheckbox" class="text-xs text-gray-600">
+                        أوافق على 
+                        <a href="#" class="text-[#1591DC] hover:text-[#2C5EAD]">الشروط والأحكام</a> 
+                        و 
+                        <a href="#" class="text-[#1591DC] hover:text-[#2C5EAD]">سياسة الخصوصية</a>
+                    </label>
+                </div>
+                
+                <!-- reCAPTCHA token input -->
+                <input type="hidden" id="recaptchaToken" name="recaptcha_token">
+                
+                <button type="submit" id="registerBtn" class="btn-primary w-full text-white py-2.5 rounded-xl text-sm font-semibold transition-all">
+                    <span class="flex items-center justify-center gap-2">
+                        <i class="fas fa-user-plus text-xs"></i>
+                        إنشاء حساب
+                    </span>
+                </button>
+            </form>
+            
+            <div class="mt-5 text-center">
+                <p class="text-xs" style="color: #4BB8FA;">
+                    لديك حساب بالفعل؟
+                    <a href="index.html" class="font-semibold transition-colors" style="color: #1591DC;">
+                        تسجيل الدخول
+                    </a>
+                </p>
+            </div>
+            
+            <!-- Security Info -->
+            <div class="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-indigo-100">
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    <i class="fas fa-shield-alt text-indigo-500"></i>
+                    <span>حسابك محمي بـ:</span>
+                    <span class="text-green-600">✓ تشفير متقدم</span>
+                    <span class="text-green-600">✓ حماية من البوتات</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script>
+        // Create background circles
+        function createBackgroundCircles() {
+            const container = document.getElementById('bgCircles');
+            for (let i = 0; i < 15; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('bg-circle');
+                const size = Math.random() * 150 + 50;
+                circle.style.width = size + 'px';
+                circle.style.height = size + 'px';
+                circle.style.left = Math.random() * 100 + '%';
+                circle.style.top = Math.random() * 100 + '%';
+                circle.style.animationDelay = Math.random() * 20 + 's';
+                circle.style.animationDuration = Math.random() * 15 + 10 + 's';
+                container.appendChild(circle);
+            }
+        }
+        createBackgroundCircles();
+        
+        // Show toast message
+        function showMessage(text, isSuccess) {
+            const container = document.getElementById('messageContainer');
+            const bgColor = isSuccess ? '#F0FDF4' : '#FEF2F2';
+            const textColor = isSuccess ? '#166534' : '#991B1B';
+            const icon = isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle';
+            const borderColor = isSuccess ? '#BBF7D0' : '#FECACA';
+            container.innerHTML = `
+                <div class="p-3 rounded-lg" style="background-color: ${bgColor}; color: ${textColor}; border: 1px solid ${borderColor};">
+                    <div class="flex items-center gap-2 text-sm">
+                        <i class="fas ${icon}"></i>
+                        <span>${text}</span>
+                    </div>
+                </div>
+            `;
+            setTimeout(() => {
+                if (container.firstChild) container.innerHTML = '';
+            }, 4000);
+        }
+        
+        // Get reCAPTCHA token
+        async function getRecaptchaToken() {
+            if (typeof grecaptcha !== 'undefined') {
+                try {
+                    const token = await grecaptcha.execute('6Lei3R4tAAAAAMcJ9OMpyoXpoPDpLWRRQ3tgU2YB', { action: 'register' });
+                    document.getElementById('recaptchaToken').value = token;
+                    return token;
+                } catch (error) {
+                    console.warn('reCAPTCHA failed:', error);
+                    return null;
+                }
+            }
+            return null;
+        }
+        
+        // Password strength indicator
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('passwordStrength');
+            
+            if (password.length === 0) {
+                strengthBar.style.width = '0%';
+                strengthBar.style.backgroundColor = '#E2E8F0';
+                return;
+            }
+            
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            const width = (strength / 5) * 100;
+            strengthBar.style.width = width + '%';
+            
+            if (strength <= 1) strengthBar.style.backgroundColor = '#EF4444';
+            else if (strength <= 3) strengthBar.style.backgroundColor = '#F59E0B';
+            else strengthBar.style.backgroundColor = '#10B981';
+        });
+        
+        // Handle form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const termsAccepted = document.getElementById('termsCheckbox').checked;
+            const registerBtn = document.getElementById('registerBtn');
+            const originalHtml = registerBtn.innerHTML;
+            
+            // Validation
+            if (!name || !email || !password) {
+                showMessage('✗ الرجاء ملء جميع الحقول', false);
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('✗ كلمة المرور وتأكيدها غير متطابقين', false);
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('✗ كلمة المرور يجب أن تكون 6 أحرف على الأقل', false);
+                return;
+            }
+            
+            if (!termsAccepted) {
+                showMessage('✗ يجب الموافقة على الشروط والأحكام', false);
+                return;
+            }
+            
+            registerBtn.innerHTML = '<span class="flex items-center justify-center gap-2"><div class="spinner"></div> جاري إنشاء الحساب...</span>';
+            registerBtn.disabled = true;
+            
+            // Get reCAPTCHA token
+            const recaptchaToken = await getRecaptchaToken();
+            const payload = { name, email, password };
+            if (recaptchaToken) {
+                payload['g-recaptcha-response'] = recaptchaToken;
+            }
+            
+            try {
+                const response = await api('/auth/register', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                
+                setSession(response);
+                showMessage('✓ تم إنشاء الحساب بنجاح! جاري التحويل...', true);
+                
+                setTimeout(() => {
+                    const role = response.user.role;
+                    if (role === 'admin') window.location.href = 'admin.html';
+                    else if (role === 'researcher') window.location.href = 'researcher.html';
+                    else window.location.href = 'dashboard.html';
+                }, 1500);
+                
+            } catch (error) {
+                let errorMessage = error.message;
+                if (errorMessage.includes('already exists')) {
+                    errorMessage = 'البريد الإلكتروني مسجل مسبقاً';
+                } else if (errorMessage.includes('validation')) {
+                    errorMessage = 'بيانات غير صالحة';
+                } else if (errorMessage.includes('reCAPTCHA')) {
+                    errorMessage = 'فشل التحقق الأمني. يرجى المحاولة مرة أخرى';
+                }
+                showMessage('✗ ' + errorMessage, false);
+                registerBtn.innerHTML = originalHtml;
+                registerBtn.disabled = false;
+            }
+        });
+        
+        // Auto redirect if already logged in
+        if (typeof token === 'function' && token() && typeof user === 'function' && user()) {
+            const currentUser = user();
+            const role = currentUser.role;
+            if (role === 'admin') window.location.href = 'admin.html';
+            else if (role === 'researcher') window.location.href = 'researcher.html';
+            else window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>
