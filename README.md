@@ -1,85 +1,229 @@
-﻿# PURE Survey Platform
+# 📊 PURE Survey Platform
 
-A complete survey and forms platform built from the supplied specification.
+> منصة استبيانات متكاملة مع نظام أدوار (Admin, Researcher, User)
 
-## Stack
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Node.js](https://img.shields.io/badge/Node.js-18.x-green.svg)
+![Express](https://img.shields.io/badge/Express-4.x-lightgrey.svg)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14.x-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Team](https://img.shields.io/badge/team-3_members-orange.svg)
 
-- Backend: Node.js, Express.js
-- Database: PostgreSQL
-- ORM: Sequelize
-- Auth: JWT access token only, 24-hour validity
-- Password hashing: bcrypt strength 10
-- Frontend: HTML/CSS/JS + Tailwind CDN
-- Export: ExcelJS `.xlsx`
-- Security: Helmet, CORS, rate limiting, validation, role middleware
-- Logging: Winston + `logs` table for server errors
-- API docs: Swagger UI at `/api-docs`
+---
 
-## Roles
+## 📖 **نبذة عن المشروع**
 
-- `admin`: full access to surveys, users, responses, exports
-- `researcher`: manage own surveys and responses
-- `user`: answer published surveys and view own responses
+**PURE Survey Platform** هي منصة متكاملة لإدارة الاستبيانات والمسوح، تم تطويرها لتلبية احتياجات الباحثين والمؤسسات. توفر المنصة واجهة سهلة الاستخدام مع نظام أدوار متكامل يضمن التحكم الكامل في الصلاحيات.
 
-## Project Structure
+### ✨ **المميزات الرئيسية**
 
-```text
-pure-survey-platform/
-  backend/
-    src/
-      config/ models/ middleware/ controllers/ services/ routes/ validators/ seeders/ utils/
-    uploads/
-    tests/
-  frontend/
-    *.html
-    css/style.css
-    js/*.js
+- ✅ **نظام أدوار متكامل**: Admin، Researcher، User
+- ✅ **إنشاء وإدارة الاستبيانات**: واجهة سهلة لإنشاء الاستبيانات
+- ✅ **جمع الردود**: نظام متكامل لجمع وتحليل الردود
+- ✅ **تصدير البيانات**: دعم تصدير النتائج بصيغة Excel
+- ✅ **توثيق API**: واجهة Swagger لتجربة الـ API
+- ✅ **سجلات الأخطاء**: نظام تسجيل متكامل باستخدام Winston
+- ✅ **حماية متقدمة**: Helmet، CORS، تقييد الطلبات، التحقق من الصلاحيات
+
+---
+
+## 👥 **فريق العمل**
+
+نفخر بتقديم فريقنا المتميز الذي ساهم في إنجاز هذا المشروع:
+
+|  | الاسم | الدور | التخصص |
+|--|------|------|--------|
+| <img src="https://img.icons8.com/color/48/000000/administrator-male.png" width="30"> | **أحمد الحايك** | قائد الفريق / Full-Stack Developer | Node.js, Express, PostgreSQL |
+| <img src="https://img.icons8.com/color/48/000000/engineer.png" width="30"> | **المهندسة رغد السرحي** | Backend Developer | API Development, Database Design |
+| <img src="https://img.icons8.com/color/48/000000/engineer.png" width="30"> | **المهندسة زينة** | Frontend Developer | UI/UX, HTML, CSS, JavaScript |
+
+> 🤝 **شكر خاص**: لكل أعضاء الفريق على تفانيهم وإبداعهم في إنجاز هذا العمل المتميز.
+
+---
+
+## 🛠️ **التقنيات المستخدمة**
+
+| الطبقة | التقنية |
+|--------|---------|
+| **Backend** | Node.js, Express.js |
+| **قاعدة البيانات** | PostgreSQL |
+| **ORM** | Sequelize |
+| **المصادقة** | JWT (صلاحية 24 ساعة) |
+| **تشفير كلمات المرور** | bcrypt (قوة 10) |
+| **Frontend** | HTML, CSS, JavaScript + Tailwind CDN |
+| **تصدير البيانات** | ExcelJS (.xlsx) |
+| **الأمان** | Helmet, CORS, Rate Limiting |
+| **التوثيق** | Swagger UI (`/api-docs`) |
+
+---
+
+## 🚀 **بدء التشغيل السريع**
+
+### المتطلبات الأساسية
+
+- Node.js (v18 أو أحدث)
+- PostgreSQL (v14 أو أحدث)
+- npm أو yarn
+
+### خطوات التثبيت
+
+#### 1. **استنساخ المشروع**
+
+```bash
+git clone https://github.com/Alhayek7/pure-survey-platform.git
+cd pure-survey-platform
 ```
 
-## Quick Start
+#### 2. **إعداد Backend**
 
-```powershell
+```bash
 cd backend
-copy .env.example .env
+cp .env.example .env
 npm install
+```
+
+#### 3. **تهيئة قاعدة البيانات**
+
+```bash
 npm run db:setup
+```
+
+#### 4. **تشغيل الخادم**
+
+```bash
 npm start
 ```
 
-Then serve the frontend from another terminal:
+#### 5. **تشغيل Frontend** (في نافذة أخرى)
 
-```powershell
+```bash
 cd frontend
 npx serve . -l 8000
 ```
 
-Open:
+#### 6. **فتح التطبيق**
 
-- Frontend: `http://localhost:8000`
-- Backend health: `http://localhost:3000/health`
-- Swagger: `http://localhost:3000/api-docs`
+- **واجهة المستخدم**: `http://localhost:8000`
+- **فحص صحة الخادم**: `http://localhost:3000/health`
+- **توثيق API**: `http://localhost:3000/api-docs`
 
-## Default Admin
+---
 
-After `npm run db:setup`:
+## 👥 **نظام الأدوار والصلاحيات**
 
-- Email: `admin@example.com`
-- Password: `admin123`
+| الدور | الصلاحيات |
+|-------|-----------|
+| **Admin** | صلاحية كاملة على جميع الاستبيانات، المستخدمين، الردود، والتصدير |
+| **Researcher** | إدارة الاستبيانات الخاصة والردود المرتبطة بها |
+| **User** | الإجابة على الاستبيانات المنشورة وعرض ردودهم الخاصة |
 
-Change this password immediately before real use.
+---
 
-## Main API
+## 🔑 **المستخدم الافتراضي**
 
-- `POST /api/v1/auth/register`
-- `POST /api/v1/auth/login`
-- `GET /api/v1/auth/me`
-- `POST /api/v1/surveys`
-- `GET /api/v1/surveys/public`
-- `POST /api/v1/responses`
-- `GET /api/v1/responses/survey/:id`
-- `GET /api/v1/export/survey/:id`
-- `GET /api/v1/users`
+بعد تنفيذ `npm run db:setup`، يتم إنشاء مستخدم Admin افتراضي:
 
-## Notes
+- **البريد الإلكتروني**: `admin@example.com`
+- **كلمة المرور**: `admin123`
 
-This is a first complete implementation matching the Word specification. It uses `sequelize.sync({ alter: true })` for setup to keep Windows installation simple. For production, replace that with explicit migrations.
+> ⚠️ **تنبيه**: يُرجى تغيير كلمة المرور فوراً قبل الاستخدام الفعلي!
+
+---
+
+## 📡 **واجهات API الرئيسية**
+
+| الطريقة | المسار | الوصف |
+|---------|--------|-------|
+| `POST` | `/api/v1/auth/register` | تسجيل مستخدم جديد |
+| `POST` | `/api/v1/auth/login` | تسجيل الدخول |
+| `GET` | `/api/v1/auth/me` | عرض معلومات المستخدم |
+| `POST` | `/api/v1/surveys` | إنشاء استبيان جديد |
+| `GET` | `/api/v1/surveys/public` | عرض الاستبيانات المنشورة |
+| `POST` | `/api/v1/responses` | إرسال رد على استبيان |
+| `GET` | `/api/v1/responses/survey/:id` | عرض ردود استبيان معين |
+| `GET` | `/api/v1/export/survey/:id` | تصدير نتائج استبيان بصيغة Excel |
+| `GET` | `/api/v1/users` | عرض قائمة المستخدمين (للمدير) |
+
+> 📚 **للتوثيق الكامل**: راجع `/api-docs` بعد تشغيل الخادم.
+
+---
+
+## 📂 **هيكل المشروع**
+
+```
+pure-survey-platform/
+├── backend/
+│   ├── src/
+│   │   ├── config/         # إعدادات التطبيق
+│   │   ├── models/         # نماذج قاعدة البيانات
+│   │   ├── middleware/     # البرمجيات الوسيطة
+│   │   ├── controllers/    # منطق التحكم
+│   │   ├── services/       # طبقة الخدمات
+│   │   ├── routes/         # مسارات API
+│   │   ├── validators/     # التحقق من البيانات
+│   │   ├── seeders/        # بيانات أولية
+│   │   └── utils/          # دوال مساعدة
+│   ├── uploads/            # الملفات المرفوعة
+│   ├── tests/              # اختبارات
+│   └── package.json
+├── frontend/
+│   ├── css/                # ملفات التنسيق
+│   ├── js/                 # ملفات JavaScript
+│   └── *.html              # صفحات التطبيق
+├── README.md
+├── INSTALLATION.md
+└── LICENSE
+```
+
+---
+
+## 🤝 **المساهمة في المشروع**
+
+نرحب بمساهماتكم! يُرجى اتباع الخطوات التالية:
+
+1. عمل **Fork** للمشروع
+2. إنشاء فرع جديد (`git checkout -b feature/AmazingFeature`)
+3. إجراء التغييرات المطلوبة
+4. رفع التغييرات (`git push origin feature/AmazingFeature`)
+5. فتح **Pull Request**
+
+---
+
+## 📝 **الترخيص**
+
+هذا المشروع مرخص تحت رخصة **MIT** - راجع ملف [LICENSE](LICENSE) للتفاصيل.
+
+---
+
+## 📧 **جهات الاتصال**
+
+| الاسم | الدور | GitHub |
+|-------|-------|--------|
+| **أحمد الحييك** | قائد الفريق | [Alhayek7](https://github.com/Alhayek7) |
+| **رغد السرحي** | Backend Developer | [رابط GitHub] |
+| **زينة** | Frontend Developer | [رابط GitHub] |
+
+- **رابط المشروع**: [https://github.com/Alhayek7/pure-survey-platform](https://github.com/Alhayek7/pure-survey-platform)
+
+---
+
+## 🙏 **شكر وتقدير**
+
+نقدم جزيل الشكر لكل أعضاء الفريق على جهودهم المخلصة:
+
+- **المهندس رغد السرحي** - على إتقانه في تطوير الـ Backend وقاعدة البيانات
+- **المهندسة زينة** - على إبداعها في تصميم واجهة المستخدم وتجربة المستخدم
+- **أحمد الحييك** - على قيادة الفريق والتكامل بين المكونات
+
+شكر خاص لكل من ساهم في تطوير هذه المنصة وجعلها أداة مفيدة للباحثين والمؤسسات.
+
+---
+
+<div align="center">
+
+**⭐ لا تنسَ منح المشروع نجمة على GitHub إذا أعجبك! ⭐**
+
+</div>
+
+---
+
